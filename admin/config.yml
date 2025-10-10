@@ -1,0 +1,16 @@
+backend:
+  name: git-gateway
+  branch: main # or master
+
+media_folder: "assets/images"
+public_folder: "/assets/images"
+
+collections:
+  - name: "projects"
+    label: "المشاريع"
+    folder: "_data"
+    create: true
+    fields:
+      - {label: "العنوان", name: "title", widget: "string", required: true}
+      - {label: "الفئة", name: "category", widget: "select", options: ["branding", "social-media", "packaging", "infographics"], required: true}
+      - {label: "الصورة", name: "image", widget: "image", required: true}
