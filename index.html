@@ -4,17 +4,73 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>بلال ياسر – مصمم جرافيك مستقل</title>
+    <link rel="icon" href="https://i.postimg.cc/TPCqHSWc/4.png" type="image/png">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="animations-enhancements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="translations.js"></script>
 </head>
 <body>
+    <!-- Loading Screen -->
+    <div class="loading-screen">
+        <div class="loading-content">
+            <img src="https://i.postimg.cc/Hxk3YHC5/logo-1.png" alt="Logo" class="loading-logo">
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <!-- Adobe Icons Animated Background -->
+    <div class="neon-shapes">
+        <div class="neon-shape"></div>
+        <div class="neon-shape"></div>
+        <div class="neon-shape"></div>
+        <div class="neon-shape"></div>
+        <div class="neon-pen"></div>
+        <div class="neon-curve"></div>
+    </div>
+
+    <header class="main-header">
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo-language-section">
+                    <a href="#home" class="logo">
+                        <img src="https://i.postimg.cc/Hxk3YHC5/logo-1.png" alt="Belal Yasser Logo">
+                    </a>
+                    <button class="language-toggle" onclick="toggleLanguage()">English</button>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="#home" class="nav-link" data-translate="nav_home">الرئيسية</a></li>
+                    <li><a href="#about" class="nav-link" data-translate="nav_about">من أنا</a></li>
+                    <li><a href="#services" class="nav-link" data-translate="nav_services">خدماتي</a></li>
+                    <li><a href="#why-me" class="nav-link" data-translate="nav_why_me">لماذا أنا</a></li>
+                    <li><a href="#portfolio" class="nav-link" data-translate="nav_portfolio">معرض الأعمال</a></li>
+                    <li><a href="#contact" class="nav-link" data-translate="nav_contact">تواصل معي</a></li>
+                </ul>
+                <button class="menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
     <main>
         <section class="hero" id="home">
             <div class="hero-bg-overlay"></div>
+            <!-- Adobe Icons Background -->
+            <div class="hero-adobe-icons">
+                <div class="adobe-icon"></div>
+                <div class="adobe-icon"></div>
+                <div class="adobe-icon"></div>
+                <div class="adobe-icon"></div>
+                <div class="adobe-icon"></div>
+                <div class="adobe-icon"></div>
+            </div>
             <div class="container fade-up">
-                <h1>بلال ياسر</h1>
-                <p class="subtitle">مصمم جرافيك مستقل، أصنع هويات بصرية جذابة توصل رسالة مشروعك بوضوح.</p>
-                <a href="#portfolio" class="btn btn-primary">شاهد أعمالي</a>
+                <h1 data-translate="hero_title">بلال ياسر</h1>
+                <p class="subtitle" data-translate="hero_subtitle">مصمم جرافيك مستقل، أصنع هويات بصرية جذابة توصل رسالة مشروعك بوضوح.</p>
+                <a href="#portfolio" class="btn btn-primary" data-translate="hero_cta">شاهد أعمالي</a>
             </div>
         </section>
 
@@ -22,13 +78,103 @@
             <div class="container">
                 <div class="about-grid fade-up">
                     <div class="about-content">
-                        <h2>مين أنا؟</h2>
-                        <p>
-                            أنا <strong>بلال ياسر – مصمم جرافيك مستقل</strong>. عندي خبرة أكتر من 4 سنين في تصميم الهويات البصرية، السوشيال ميديا، الباكجات، والتصميمات الطباعية. بحب البساطة في الشغل، والنتيجة دايمًا تكون تصميم يوصل الرسالة بسرعة وبشكل جذّاب.
-                        </p>
+                        <h2 data-translate="about_title">مين أنا؟</h2>
+                        <p data-translate="about_text1">أنا <strong>بلال ياسر</strong>، مصمم جرافيك متخصص في تصميمات السوشيال ميديا والهوية البصرية.</p>
+                        <p data-translate="about_text2">بحب أقدّم تصميم بسيط وفكرته واضحة، يوصل الرسالة من أول نظرة.</p>
+                        <p data-translate="about_text3">اشتغلت مع عملاء من مصر وكمان في السوق الخليجي، وده ساعدني أفهم أكتر اختلاف الذوق وطبيعة الجمهور هناك.</p>
+                        <p data-translate="about_text4">بشوف إن التصميم مش مجرد شكل، لكنه وسيلة توصل الفكرة وتسيب انطباع مميز عن البراند.</p>
                     </div>
                     <div class="about-image">
-                        <img src="https://i.postimg.cc/0Q2TtvrQ/Generated-Image-October-09-2025-8-44-PM.png" alt="Belal Yasser Portrait">
+                        <img src="72b19b13-676a-4c2a-b600-3f948241cd0c.jpg" alt="Belal Yasser Portrait">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="achievements" id="achievements">
+            <div class="container">
+                <div class="section-header fade-up">
+                    <h2 data-translate="achievements_title">إنجازاتي بالأرقام</h2>
+                </div>
+                <div class="achievements-grid">
+                    <div class="achievement-card fade-up" style="transition-delay: 0.1s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="achievement-number" data-target="4">0</div>
+                        <div class="achievement-label" data-translate="achievements_experience">سنوات خبرة</div>
+                    </div>
+                    <div class="achievement-card fade-up" style="transition-delay: 0.2s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="achievement-number" data-target="50">0</div>
+                        <div class="achievement-label" data-translate="achievements_clients">عميل راضٍ</div>
+                    </div>
+                    <div class="achievement-card fade-up" style="transition-delay: 0.3s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-briefcase"></i>
+                        </div>
+                        <div class="achievement-number" data-target="100">0</div>
+                        <div class="achievement-label" data-translate="achievements_projects">مشروع مكتمل</div>
+                    </div>
+                    <div class="achievement-card fade-up" style="transition-delay: 0.4s;">
+                        <div class="achievement-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="achievement-number" data-target="100">0</div>
+                        <div class="achievement-label" data-translate="achievements_satisfaction">رضا العملاء</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="skills" id="skills">
+            <div class="container">
+                <div class="section-header fade-up">
+                    <h2 data-translate="skills_title">البرامج التي أتقنها</h2>
+                    <p data-translate="skills_subtitle">أدوات احترافية لتحويل أفكارك إلى تصاميم مميزة</p>
+                </div>
+                <div class="skills-grid">
+                    <div class="skill-card fade-up" style="transition-delay: 0.1s;">
+                        <div class="skill-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg" alt="Adobe Photoshop">
+                        </div>
+                        <h3>Adobe Photoshop</h3>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="100"></div>
+                        </div>
+                        <span class="skill-percentage">100%</span>
+                    </div>
+                    <div class="skill-card fade-up" style="transition-delay: 0.2s;">
+                        <div class="skill-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg" alt="Adobe Illustrator">
+                        </div>
+                        <h3>Adobe Illustrator</h3>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="90"></div>
+                        </div>
+                        <span class="skill-percentage">90%</span>
+                    </div>
+                    <div class="skill-card fade-up" style="transition-delay: 0.3s;">
+                        <div class="skill-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Adobe_InDesign_CC_icon.svg" alt="Adobe InDesign">
+                        </div>
+                        <h3>Adobe InDesign</h3>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="85"></div>
+                        </div>
+                        <span class="skill-percentage">85%</span>
+                    </div>
+                    <div class="skill-card fade-up" style="transition-delay: 0.4s;">
+                        <div class="skill-icon">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg" alt="Adobe Premiere">
+                        </div>
+                        <h3>Adobe Premiere</h3>
+                        <div class="skill-bar">
+                            <div class="skill-progress" data-progress="60"></div>
+                        </div>
+                        <span class="skill-percentage">60%</span>
                     </div>
                 </div>
             </div>
@@ -37,34 +183,29 @@
         <section class="services" id="services">
             <div class="container">
                 <div class="section-header fade-up">
-                    <h2>خدماتي</h2>
-                    <p>حلول تصميم متكاملة لمشروعك</p>
+                    <h2 data-translate="services_title">خدماتي</h2>
+                    <p data-translate="services_subtitle">بقدّم حلول تصميم تساعد البراند بتاعك يبان بشكل احترافي ويعبّر عن فكرته بوضوح</p>
                 </div>
                 <div class="services-grid">
                     <div class="service-card fade-up" style="transition-delay: 0.1s;">
-                        <i class="fas fa-gem"></i>
-                        <h3>هوية بصرية كاملة</h3>
-                        <p>لوجو – كارت – دليل استخدام اللوجو.</p>
+                        <i class="fas fa-hashtag"></i>
+                        <h3 data-translate="service_social_title">تصميم سوشيال ميديا</h3>
+                        <p data-translate="service_social_desc">بوستات – ستوريات – كرياتيف لحملاتك الإعلانية.</p>
                     </div>
                     <div class="service-card fade-up" style="transition-delay: 0.2s;">
-                        <i class="fas fa-hashtag"></i>
-                        <h3>تصميم سوشيال ميديا</h3>
-                        <p>بوستات – ستوریز – كرياتيف لحملات.</p>
+                        <i class="fas fa-gem"></i>
+                        <h3 data-translate="service_branding_title">هوية بصرية كاملة</h3>
+                        <p data-translate="service_branding_desc">لوجو – كارت – دليل استخدام الهوية – تطبيقات الهوية على السوشيال ميديا.</p>
                     </div>
                     <div class="service-card fade-up" style="transition-delay: 0.3s;">
-                        <i class="fas fa-box-open"></i>
-                        <h3>تصميم التغليف والمنتجات</h3>
-                        <p>استيكرات – عبوات – ليبلات.</p>
+                        <i class="fas fa-print"></i>
+                        <h3 data-translate="service_print_title">تصميم المطبوعات</h3>
+                        <p data-translate="service_print_desc">فلاير – بروشور – رول أب – كروت شخصية وكل ما يخص الهوية الورقية.</p>
                     </div>
                     <div class="service-card fade-up" style="transition-delay: 0.4s;">
-                        <i class="fas fa-print"></i>
-                        <h3>تصميم المطبوعات</h3>
-                        <p>فلاير – بروشور – رول أب – بنرات.</p>
-                    </div>
-                    <div class="service-card fade-up" style="transition-delay: 0.5s;">
-                        <i class="fas fa-chart-pie"></i>
-                        <h3>تصميم انفوجرافيك</h3>
-                        <p>توضيح الأفكار والمشاريع بمحتوى مرئي.</p>
+                        <i class="fas fa-file-powerpoint"></i>
+                        <h3 data-translate="service_web_title">تصميم العروض التقديمية</h3>
+                        <p data-translate="service_web_desc">عروض احترافية بتصميم جذّاب يعرض أفكارك بطريقة منظمة وسهلة.</p>
                     </div>
                 </div>
             </div>
@@ -77,7 +218,7 @@
                 </div>
                 <div class="why-me-grid">
                     <div class="why-me-image fade-up">
-                        <img src="https://i.postimg.cc/sgCH1zPz/646a1b36-718c-4c1a-b2f8-aa24e4f8b1aa.jpg" alt="Why Choose Me Image">
+                        <img src="Generated Image October 09, 2025 - 8_42PM.png" alt="Why Choose Me Image">
                     </div>
                     <div class="why-me-content fade-up" style="transition-delay: 0.2s;">
                         <ul>
@@ -95,19 +236,17 @@
         <section class="portfolio" id="portfolio">
             <div class="container">
                 <div class="section-header fade-up">
-                    <h2>معرض الأعمال</h2>
-                    <p>المعرض بيتحدث باستمرار — بيضم شغلي في البراندينج، السوشيال ميديا، والتصميمات الطباعية.</p>
+                    <h2 data-translate="portfolio_title">معرض الأعمال</h2>
+                    <p data-translate="portfolio_subtitle">المعرض بيتحدث باستمرار بيضم شغلي في البراندينج، السوشيال ميديا، والتصميمات الطباعية.</p>
+                </div>
+                <div class="category-list fade-up" style="margin-bottom: 30px;">
+                    <!-- Categories will be loaded dynamically -->
                 </div>
                 <div class="portfolio-grid">
-                    <div class="portfolio-item fade-up" style="background-image: url('https://picsum.photos/seed/port1/600/400'); transition-delay: 0.1s;"></div>
-                    <div class="portfolio-item fade-up" style="background-image: url('https://picsum.photos/seed/port2/600/400'); transition-delay: 0.2s;"></div>
-                    <div class="portfolio-item fade-up" style="background-image: url('https://picsum.photos/seed/port3/600/400'); transition-delay: 0.3s;"></div>
-                    <div class="portfolio-item fade-up" style="background-image: url('https://picsum.photos/seed/port4/600/400'); transition-delay: 0.4s;"></div>
-                    <div class="portfolio-item fade-up" style="background-image: url('https://picsum.photos/seed/port5/600/400'); transition-delay: 0.5s;"></div>
-                    <div class="portfolio-item fade-up" style="background-image: url('https://picsum.photos/seed/port6/600/400'); transition-delay: 0.6s;"></div>
+                    <!-- Images will be loaded dynamically by script.js -->
                 </div>
                 <div class="portfolio-cta fade-up">
-                    <a href="projects.html" class="btn btn-primary">عرض كل المشاريع</a>
+                    <a href="projects.html" class="btn btn-primary" data-translate="portfolio_view_more">عرض كل المشاريع</a>
                 </div>
             </div>
         </section>
@@ -115,8 +254,8 @@
         <section class="contact-wrapper" id="contact">
             <div class="container">
                 <div class="contact fade-up">
-                    <h2>طرق التواصل</h2>
-                    <p>لنتحدث عن مشروعك القادم ونبني شيئًا رائعًا معًا.</p>
+                    <h2 data-translate="contact_title">طرق التواصل</h2>
+                    <p data-translate="contact_subtitle">لنتحدث عن مشروعك القادم ونبني شيئًا رائعًا معًا.</p>
                     <div class="contact-methods">
                         <a href="tel:+201069125804" class="contact-card">
                             <i class="fas fa-phone"></i>
@@ -141,7 +280,7 @@
 
     <footer class="main-footer">
         <div class="container">
-            <p class="copyright">
+            <p class="copyright" data-translate="footer_text">
                 تم التصميم والتطوير بواسطة: سامح رضا
             </p>
             <div class="footer-social-icons">
@@ -156,6 +295,7 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="script.js"></script>
 </body>
 </html>

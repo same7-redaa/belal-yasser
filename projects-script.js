@@ -1,32 +1,101 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const GITHUB_USER = 'same7-redaa';
-    const GITHUB_REPO = 'belal';
-    const PROJECTS_PATH = 'projects';
+// إعداد Supabase Client
+const SUPABASE_URL = 'https://bkvcmceyxsgzvvcozwkf.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrdmNtY2V5eHNnenZ2Y296d2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDAyODQsImV4cCI6MjA3NTY3NjI4NH0.TtZg_fT1gBCfxx7jT9bTk_ylm7kAjQGflCbMKcyZJWY';
 
+let supabase;
+
+// التحقق من تحميل مكتبة Supabase
+if (typeof window.supabase !== 'undefined') {
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    console.log('✅ Supabase client initialized successfully');
+} else {
+    console.error('❌ Supabase library not loaded. Make sure the script tag is included.');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
     const categoriesContainer = document.querySelector('.category-list');
     const projectsContainer = document.getElementById('portfolio-grid-container');
-    let allProjectsData = []; // Cache for all project images
+    let allProjectsData = [];
 
-    async function fetchJson(url) {
-        const response = await fetch(url);
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+    async function fetchAllProjects() {
+        if (!supabase) {
+            console.error('❌ Supabase client not initialized');
+            projectsContainer.innerHTML = '<p>خطأ في الاتصال بقاعدة البيانات.</p>';
+            return [];
         }
-        return response.json();
+
+        try {
+            console.log('🔄 Fetching projects from Supabase...');
+            
+            // محاولة الجلب مع الترتيب حسب created_at
+            let { data: projects, error } = await supabase
+                .from('projects')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            // إذا فشل بسبب عدم وجود created_at، جرب بدون ترتيب
+            if (error && error.message.includes('created_at')) {
+                console.log('⚠️ Column created_at not found, fetching without ordering...');
+                const result = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('id', { ascending: false });
+                
+                projects = result.data;
+                error = result.error;
+            }
+
+            if (error) {
+                console.error('❌ Error fetching projects:', error);
+                projectsContainer.innerHTML = `<p>حدث خطأ أثناء تحميل المشاريع: ${error.message}</p>`;
+                return [];
+            }
+
+            console.log('✅ Projects fetched successfully:', projects);
+            return projects || [];
+        } catch (err) {
+            console.error('❌ Exception while fetching projects:', err);
+            projectsContainer.innerHTML = '<p>حدث خطأ غير متوقع. حاول مرة أخرى لاحقاً.</p>';
+            return [];
+        }
     }
 
-    function renderProjects(projects) {
+    function renderProjects(projectsToRender) {
         projectsContainer.innerHTML = '';
-        projects.forEach(project => {
+        if (projectsToRender.length === 0) {
+            projectsContainer.innerHTML = '<p style="text-align: center; width: 100%; grid-column: 1 / -1;">لا توجد مشاريع في هذه الفئة حالياً.</p>';
+            return;
+        }
+
+        projectsToRender.forEach(project => {
             const projectItem = document.createElement('a');
-            projectItem.href = project.download_url; // Link to the full image
-            projectItem.target = '_blank'; // Open in a new tab
+            projectItem.href = project.image_url;
+            projectItem.target = '_blank';
             projectItem.className = 'portfolio-item fade-up';
-            projectItem.style.backgroundImage = `url(${project.download_url})`;
-            projectItem.setAttribute('data-category', project.category);
+            
+            // إنشاء عنصر img بدلاً من background-image
+            const img = document.createElement('img');
+            img.src = project.image_url;
+            img.alt = project.category || 'Project Image';
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.position = 'absolute';
+            img.style.top = '0';
+            img.style.left = '0';
+            
+            // إضافة معالج للأخطاء
+            img.onerror = function() {
+                console.error('Failed to load image:', project.image_url);
+                this.style.display = 'none';
+                projectItem.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                projectItem.innerHTML = '<span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #aaa;">⚠️</span>';
+            };
+            
+            projectItem.appendChild(img);
             projectsContainer.appendChild(projectItem);
         });
-        // Trigger fade-up animation
+
         setTimeout(() => {
             document.querySelectorAll('.portfolio-item.fade-up').forEach(item => {
                 item.classList.add('visible');
@@ -36,7 +105,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function filterProjects(category) {
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-        document.querySelector(`[data-category-name="${category}"]`).classList.add('active');
+        const activeBtn = document.querySelector(`[data-category-name="${category}"]`);
+        if (activeBtn) activeBtn.classList.add('active');
 
         if (category === 'الكل') {
             renderProjects(allProjectsData);
@@ -46,21 +116,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function loadProjects() {
+    async function initializePortfolio() {
         if (!categoriesContainer || !projectsContainer) return;
 
         projectsContainer.innerHTML = '<p>جاري تحميل المشاريع...</p>';
+        allProjectsData = await fetchAllProjects();
 
-        try {
-            const categories = await fetchJson(`https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/${PROJECTS_PATH}`);
-            const categoryFolders = categories.filter(item => item.type === 'dir');
+        if (allProjectsData.length > 0) {
+            const categories = [...new Set(allProjectsData.map(p => p.category))].sort();
 
-            if (categoryFolders.length === 0) {
-                projectsContainer.innerHTML = '<p>لم يتم العثور على مجلدات مشاريع في المستودع.</p>';
-                return;
-            }
-            
-            // 'All' button
             const allBtn = document.createElement('a');
             allBtn.href = '#';
             allBtn.className = 'category-btn active';
@@ -72,39 +136,24 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             categoriesContainer.appendChild(allBtn);
 
-            for (const folder of categoryFolders) {
-                // Category button
+            categories.forEach(category => {
                 const btn = document.createElement('a');
                 btn.href = '#';
                 btn.className = 'category-btn';
-                btn.textContent = folder.name;
-                btn.dataset.categoryName = folder.name;
+                btn.textContent = category;
+                btn.dataset.categoryName = category;
                 btn.addEventListener('click', (e) => {
                     e.preventDefault();
-                    filterProjects(folder.name);
+                    filterProjects(category);
                 });
                 categoriesContainer.appendChild(btn);
+            });
 
-                // Fetch images
-                const images = await fetchJson(folder.url);
-                const imageFiles = images.filter(file => file.type === 'file' && /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name));
-                
-                imageFiles.forEach(image => {
-                    allProjectsData.push({
-                        ...image,
-                        category: folder.name
-                    });
-                });
-            }
-
-            // Initial render
             renderProjects(allProjectsData);
-
-        } catch (error) {
-            console.error('Error loading projects:', error);
-            projectsContainer.innerHTML = '<p>حدث خطأ أثناء تحميل المشاريع. حاول مرة أخرى لاحقاً.</p>';
+        } else {
+            projectsContainer.innerHTML = '<p>لا توجد مشاريع لعرضها حالياً.</p>';
         }
     }
 
-    loadProjects();
+    initializePortfolio();
 });

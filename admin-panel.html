@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم المشاريع</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000'/><text x='50' y='70' font-size='60' font-weight='bold' text-anchor='middle' fill='%23fff' font-family='Arial, sans-serif'>B</text></svg>">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'Nahdi-Black';
+            src: url('fonts/Nahdi-Black.woff2') format('woff2'),
+                 url('fonts/Nahdi-Black.woff') format('woff'),
+                 url('fonts/Nahdi-Black.ttf') format('truetype');
+            font-weight: 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --bg-dark: #121212;
+            --accent-orange: #FF5722;
+            --text-light: #f5f5f5;
+            --text-muted: #aaaaaa;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.5);
+            --font-primary: 'Nahdi-Black', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://www.transparenttextures.com/patterns/liquid-blurry.png');
+            opacity: 0.1;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Login Screen */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h1 {
+            color: var(--accent-orange);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: var(--font-primary);
+            margin-bottom: 20px;
+            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--accent-orange);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: var(--accent-orange);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-family: var(--font-primary);
+            cursor: pointer;
+            transition: transform 0.2s;
+            box-shadow: 0 4px 20px rgba(255, 87, 34, 0.4);
+        }
+
+        .login-box button:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-message {
+            color: #f44336;
+            text-align: center;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Admin Panel */
+        .admin-panel {
+            display: none;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+
+        .header h1 {
+            color: var(--accent-orange);
+            font-size: 28px;
+        }
+
+        .logout-btn {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: var(--font-primary);
+            transition: transform 0.2s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f5f5f5;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .file-input-label:hover {
+            background: #e8eaf6;
+        }
+
+        .file-input-label i {
+            margin-left: 10px;
+            color: #667eea;
+        }
+
+        .selected-files {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: var(--font-primary);
+            transition: all 0.3s ease;
+            margin-left: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-primary {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Projects Table */
+        .projects-table {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f5f5f5;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f9f9f9;
+        }
+
+        .project-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: opacity 0.2s;
+        }
+
+        .action-btn:hover {
+            opacity: 0.8;
+        }
+
+        .edit-btn {
+            background: #2196F3;
+            color: white;
+        }
+
+        .delete-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .toggle-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .checkbox-cell {
+            text-align: center;
+        }
+
+        .bulk-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .new-category-input {
+            display: none;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 1024px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-container" id="loginScreen">
+        <div class="login-box">
+            <h1><i class="fas fa-lock"></i> تسجيل الدخول</h1>
+            <input type="password" id="passwordInput" placeholder="أدخل كلمة المرور" />
+            <button onclick="login()">دخول</button>
+            <div class="error-message" id="loginError">كلمة المرور غير صحيحة!</div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div class="admin-panel" id="adminPanel">
+        <div class="header">
+            <h1><i class="fas fa-tachometer-alt"></i> لوحة تحكم المشاريع</h1>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i>تسجيل الخروج</button>
+        </div>
+
+        <div class="content">
+            <!-- Add Project Form -->
+            <div class="card">
+                <h2><i class="fas fa-plus-circle"></i> إضافة صور جديدة</h2>
+                <form id="projectForm">
+                    <div class="form-group">
+                        <label>الفئة:</label>
+                        <select id="projectCategory" onchange="toggleNewCategory()">
+                            <option value="">-- اختر فئة --</option>
+                            <option value="__new__">+ إنشاء فئة جديدة</option>
+                        </select>
+                        <input type="text" id="newCategoryInput" class="new-category-input" placeholder="اسم الفئة الجديدة">
+                    </div>
+
+                    <div class="form-group">
+                        <label>الصور (يمكن اختيار أكثر من صورة):</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="projectImages" accept="image/*" multiple onchange="updateFileList()">
+                            <label for="projectImages" class="file-input-label">
+                                <i class="fas fa-cloud-upload-alt fa-2x"></i>
+                                <span>اختر الصور</span>
+                            </label>
+                        </div>
+                        <div class="selected-files" id="selectedFiles"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="showOnHomepage" checked>
+                            عرض في الصفحة الرئيسية
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <i class="fas fa-upload"></i> إضافة المشروع
+                    </button>
+                </form>
+                <div class="status-message" id="statusMessage"></div>
+            </div>
+
+            <!-- Projects List -->
+            <div class="card">
+                <h2><i class="fas fa-list"></i> قائمة المشاريع</h2>
+                
+                <div class="bulk-actions">
+                    <button class="btn btn-danger" onclick="bulkDelete()" id="bulkDeleteBtn" disabled>
+                        <i class="fas fa-trash"></i> حذف المحدد
+                    </button>
+                    <button class="btn btn-warning" onclick="bulkToggleHomepage(true)" id="bulkShowBtn" disabled>
+                        <i class="fas fa-eye"></i> إظهار في الرئيسية
+                    </button>
+                    <button class="btn btn-warning" onclick="bulkToggleHomepage(false)" id="bulkHideBtn" disabled>
+                        <i class="fas fa-eye-slash"></i> إخفاء من الرئيسية
+                    </button>
+                    <button class="btn btn-success" onclick="loadProjects()">
+                        <i class="fas fa-sync"></i> تحديث
+                    </button>
+                </div>
+
+                <div class="projects-table">
+                    <table id="projectsTable">
+                        <thead>
+                            <tr>
+                                <th class="checkbox-cell">
+                                    <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                </th>
+                                <th>الصورة</th>
+                                <th>الفئة</th>
+                                <th>الحالة</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projectsTableBody">
+                            <tr>
+                                <td colspan="6" class="loading">جاري تحميل المشاريع...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://bkvcmceyxsgzvvcozwkf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrdmNtY2V5eHNnenZ2Y296d2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDAyODQsImV4cCI6MjA3NTY3NjI4NH0.TtZg_fT1gBCfxx7jT9bTk_ylm7kAjQGflCbMKcyZJWY';
+        const BUCKET_NAME = 'portfolio-images';
+        const ADMIN_PASSWORD = '010274';
+
+        let supabase;
+        let allProjects = [];
+        let selectedProjects = new Set();
+
+        // Initialize Supabase
+        if (typeof window.supabase !== 'undefined') {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+
+        // Login
+        function login() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === ADMIN_PASSWORD) {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                loadCategories();
+                loadProjects();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        // Logout
+        function logout() {
+            sessionStorage.removeItem('adminLoggedIn');
+            document.getElementById('loginScreen').style.display = 'flex';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('passwordInput').value = '';
+        }
+
+        // Check if already logged in
+        window.addEventListener('load', () => {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                document.getElementById('loginScreen').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                loadCategories();
+                loadProjects();
+            }
+        });
+
+        // Enter key for login
+        document.getElementById('passwordInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') login();
+        });
+
+        // Load Categories
+        async function loadCategories() {
+            try {
+                const { data: projects } = await supabase
+                    .from('projects')
+                    .select('category');
+
+                const categories = [...new Set(projects.map(p => p.category))].sort();
+                const select = document.getElementById('projectCategory');
+                
+                select.innerHTML = '<option value="">-- إختر فئة --</option>';
+                categories.forEach(cat => {
+                    select.innerHTML += `<option value="${cat}">${cat}</option>`;
+                });
+                select.innerHTML += '<option value="__new__">+ إنشاء فئة جديدة</option>';
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        // Toggle New Category Input
+        function toggleNewCategory() {
+            const select = document.getElementById('projectCategory');
+            const input = document.getElementById('newCategoryInput');
+            
+            if (select.value === '__new__') {
+                input.style.display = 'block';
+                input.required = true;
+            } else {
+                input.style.display = 'none';
+                input.required = false;
+            }
+        }
+
+        // Update File List
+        function updateFileList() {
+            const files = document.getElementById('projectImages').files;
+            const display = document.getElementById('selectedFiles');
+            
+            if (files.length > 0) {
+                display.textContent = `تم اختيار ${files.length} صورة`;
+            } else {
+                display.textContent = '';
+            }
+        }
+
+        // Compress Image Function
+        function compressImage(file, maxWidth = 1920, maxHeight = 1920, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        // Calculate new dimensions
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = Math.round((height * maxWidth) / width);
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = Math.round((width * maxHeight) / height);
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        canvas.toBlob(
+                            (blob) => {
+                                if (blob) {
+                                    // Create a new file from the blob
+                                    const compressedFile = new File([blob], file.name, {
+                                        type: 'image/jpeg',
+                                        lastModified: Date.now()
+                                    });
+                                    
+                                    const originalSize = (file.size / 1024 / 1024).toFixed(2);
+                                    const compressedSize = (blob.size / 1024 / 1024).toFixed(2);
+                                    console.log(`✅ Compressed: ${file.name} from ${originalSize}MB to ${compressedSize}MB`);
+                                    
+                                    resolve(compressedFile);
+                                } else {
+                                    reject(new Error('فشل ضغط الصورة'));
+                                }
+                            },
+                            'image/jpeg',
+                            quality
+                        );
+                    };
+                    img.onerror = () => reject(new Error('فشل تحميل الصورة'));
+                };
+                reader.onerror = () => reject(new Error('فشل قراءة الملف'));
+            });
+        }
+
+        // Add Project
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            let category = document.getElementById('projectCategory').value;
+            const newCategory = document.getElementById('newCategoryInput').value;
+            const images = document.getElementById('projectImages').files;
+            const showOnHomepage = document.getElementById('showOnHomepage').checked;
+            const submitBtn = document.getElementById('submitBtn');
+
+            if (category === '__new__') {
+                category = newCategory;
+            }
+
+            if (!category || images.length === 0) {
+                showStatus('يرجى اختيار الفئة والصور', 'error');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            showStatus('جاري رفع الصور...', 'success');
+
+            try {
+                let successCount = 0;
+                
+                for (let i = 0; i < images.length; i++) {
+                    const image = images[i];
+                    
+                    // Compress image before upload
+                    showStatus(`جاري ضغط الصورة ${i + 1} من ${images.length}...`, 'success');
+                    const compressedImage = await compressImage(image);
+                    
+                    const fileName = `${Date.now()}_${i}_${image.name.replace(/\.[^/.]+$/, '')}.jpg`;
+                    
+                    // Upload compressed image
+                    showStatus(`جاري رفع الصورة ${i + 1} من ${images.length}...`, 'success');
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from(BUCKET_NAME)
+                        .upload(fileName, compressedImage, {
+                            cacheControl: '3600',
+                            upsert: false,
+                            contentType: 'image/jpeg'
+                        });
+
+                    if (uploadError) throw uploadError;
+
+                    // Get public URL
+                    const { data: publicUrlData } = supabase.storage
+                        .from(BUCKET_NAME)
+                        .getPublicUrl(uploadData.path);
+                    
+                    const imageUrl = publicUrlData.publicUrl;
+
+                    // Insert project - بدون حقل name
+                    const projectData = {
+                        category: category,
+                        image_url: imageUrl,
+                        show_on_homepage: showOnHomepage
+                    };
+
+                    const { error: insertError } = await supabase
+                        .from('projects')
+                        .insert([projectData]);
+
+                    if (insertError) throw insertError;
+                    
+                    successCount++;
+                    showStatus(`تم رفع ${successCount} من ${images.length} صورة...`, 'success');
+                }
+
+                showStatus(`تم إضافة ${successCount} صورة بنجاح! ✅`, 'success');
+                document.getElementById('projectForm').reset();
+                document.getElementById('selectedFiles').textContent = '';
+                loadCategories();
+                loadProjects();
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('حدث خطأ: ' + error.message, 'error');
+            } finally {
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Load Projects
+        async function loadProjects() {
+            try {
+                const { data: projects, error } = await supabase
+                    .from('projects')
+                    .select('*')
+                    .order('id', { ascending: false });
+
+                if (error) throw error;
+
+                allProjects = projects;
+                renderProjects(projects);
+            } catch (error) {
+                console.error('Error loading projects:', error);
+                document.getElementById('projectsTableBody').innerHTML = 
+                    '<tr><td colspan="6" class="loading">حدث خطأ في تحميل المشاريع</td></tr>';
+            }
+        }
+
+        // Render Projects
+        function renderProjects(projects) {
+            const tbody = document.getElementById('projectsTableBody');
+            
+            if (projects.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="loading">لا توجد مشاريع</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = projects.map(project => `
+                <tr>
+                    <td class="checkbox-cell">
+                        <input type="checkbox" class="project-checkbox" value="${project.id}" 
+                               onchange="updateBulkActions()">
+                    </td>
+                    <td>
+                        <img src="${project.image_url}" alt="صورة ${project.category}" class="project-image">
+                    </td>
+                    <td>${project.category}</td>
+                    <td>
+                        ${project.show_on_homepage !== false ? 
+                            '<span class="badge badge-success">معروض</span>' : 
+                            '<span class="badge badge-danger">مخفي</span>'}
+                    </td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="action-btn edit-btn" onclick="editProject(${project.id})">
+                                <i class="fas fa-edit"></i> تعديل
+                            </button>
+                            <button class="action-btn toggle-btn" onclick="toggleHomepage(${project.id}, ${project.show_on_homepage !== false})">
+                                <i class="fas fa-eye${project.show_on_homepage !== false ? '-slash' : ''}"></i>
+                            </button>
+                            <button class="action-btn delete-btn" onclick="deleteProject(${project.id})">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Toggle Select All
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            document.querySelectorAll('.project-checkbox').forEach(cb => {
+                cb.checked = selectAll;
+            });
+            updateBulkActions();
+        }
+
+        // Update Bulk Actions
+        function updateBulkActions() {
+            const checkboxes = document.querySelectorAll('.project-checkbox:checked');
+            const count = checkboxes.length;
+            
+            document.getElementById('bulkDeleteBtn').disabled = count === 0;
+            document.getElementById('bulkShowBtn').disabled = count === 0;
+            document.getElementById('bulkHideBtn').disabled = count === 0;
+        }
+
+        // Edit Project
+        async function editProject(id) {
+            const project = allProjects.find(p => p.id === id);
+            if (!project) return;
+
+            const newName = prompt('اسم المشروع الجديد:', project.name);
+            if (!newName) return;
+
+            const newCategory = prompt('الفئة الجديدة:', project.category);
+            if (!newCategory) return;
+
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .update({ name: newName, category: newCategory })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                showStatus('تم تحديث المشروع بنجاح! ✅', 'success');
+                loadCategories();
+                loadProjects();
+            } catch (error) {
+                showStatus('حدث خطأ: ' + error.message, 'error');
+            }
+        }
+
+        // Toggle Homepage
+        async function toggleHomepage(id, currentState) {
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .update({ show_on_homepage: !currentState })
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                loadProjects();
+            } catch (error) {
+                showStatus('حدث خطأ: ' + error.message, 'error');
+            }
+        }
+
+        // Delete Project
+        async function deleteProject(id) {
+            if (!confirm('هل أنت متأكد من حذف هذا المشروع؟')) return;
+
+            try {
+                const project = allProjects.find(p => p.id === id);
+                
+                // Delete from database
+                const { error } = await supabase
+                    .from('projects')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                // Try to delete image from storage
+                if (project.image_url) {
+                    const path = project.image_url.split('/').pop();
+                    await supabase.storage.from(BUCKET_NAME).remove([path]);
+                }
+
+                showStatus('تم حذف المشروع بنجاح! ✅', 'success');
+                loadProjects();
+            } catch (error) {
+                showStatus('حدث خطأ: ' + error.message, 'error');
+            }
+        }
+
+        // Bulk Delete
+        async function bulkDelete() {
+            const checkboxes = document.querySelectorAll('.project-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            if (!confirm(`هل أنت متأكد من حذف ${ids.length} مشروع؟`)) return;
+
+            try {
+                for (const id of ids) {
+                    await deleteProject(id);
+                }
+                
+                document.getElementById('selectAll').checked = false;
+                updateBulkActions();
+            } catch (error) {
+                showStatus('حدث خطأ: ' + error.message, 'error');
+            }
+        }
+
+        // Bulk Toggle Homepage
+        async function bulkToggleHomepage(show) {
+            const checkboxes = document.querySelectorAll('.project-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => parseInt(cb.value));
+
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .update({ show_on_homepage: show })
+                    .in('id', ids);
+
+                if (error) throw error;
+
+                showStatus(`تم تحديث ${ids.length} مشروع بنجاح! ✅`, 'success');
+                loadProjects();
+                document.getElementById('selectAll').checked = false;
+                updateBulkActions();
+            } catch (error) {
+                showStatus('حدث خطأ: ' + error.message, 'error');
+            }
+        }
+
+        // Show Status
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
