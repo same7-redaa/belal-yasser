@@ -672,8 +672,6 @@ p {
     color: #ffffff;
     margin-bottom: 20px;
     animation: fadeInUp 1s ease-out;
-    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8),
-                 0 2px 10px rgba(0, 0, 0, 0.6);
     position: relative;
     z-index: 2;
 }
@@ -1096,6 +1094,8 @@ p {
     margin: 0 2rem;
     box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
     overflow: visible;
+    height: auto;
+    min-height: auto;
 }
 
 .portfolio-cta {
@@ -1120,26 +1120,28 @@ p {
     gap: 2rem;
     margin-top: 30px;
     padding: 60px 20px;
-    max-width: 1000px;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
     overflow: visible;
+    grid-auto-rows: min-content;
+    align-items: start;
 }
 
-/* صور مربعة مع حواف مستديرة وظل جانبي */
+/* صور بأحجامها الطبيعية مع حواف مستديرة وظل جانبي */
 .portfolio .portfolio-item {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    height: auto;
     position: relative;
     border-radius: 15px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent;
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
     cursor: pointer;
+    display: block;
+    line-height: 0;
+    align-self: start;
 }
 
 /* تأثير hover ��ميز */
@@ -1150,14 +1152,12 @@ p {
 
 /* إزالة التأثير البرتقالي */
 
-/* الصورة داخل العنصر - بسيطة */
+/* الصورة داخل العنصر - تحافظ على نسبها الأصلية */
 .portfolio .portfolio-item img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-    position: absolute;
-    top: 0;
-    left: 0;
+    height: auto;
+    display: block;
+    border-radius: 15px;
     transition: transform 0.3s ease;
 }
 
@@ -1314,9 +1314,9 @@ p {
 
 /* Responsive Design */
 @media (max-width: 1200px) {
-    /* 6 صور في الشاشات الكبيرة */
+    /* 3 صور في الشاشات الكبيرة */
     .portfolio .portfolio-grid {
-        grid-template-columns: repeat(6, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
@@ -1329,6 +1329,32 @@ p {
     .achievements-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 1.5rem;
+    }
+    
+    .achievement-card {
+        padding: 40px 25px;
+        min-height: 220px;
+    }
+    
+    .achievement-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .achievement-icon i {
+        font-size: 2.2rem;
+    }
+    
+    .achievement-number {
+        font-size: 3.2rem;
+    }
+    
+    .achievement-number::after {
+        font-size: 2.5rem;
+    }
+    
+    .achievement-label {
+        font-size: 1.1rem;
     }
     
     /* Services Grid - 2 columns on tablets */
@@ -1348,10 +1374,10 @@ p {
         margin: 0 auto;
     }
     
-    /* 6 صور في التابلت */
+    /* 2 صور في التابلت */
     .portfolio .portfolio-grid {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 0.8rem;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
     }
 }
 
@@ -1447,23 +1473,39 @@ p {
     /* Achievements Grid - 2 columns on mobile */
     .achievements-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: 1.2rem;
     }
     
     .achievement-card {
-        padding: 30px 20px;
+        padding: 35px 15px;
+        min-height: 200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
     
-    .achievement-number {
-        font-size: 2.5rem;
+    .achievement-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 15px;
     }
     
-    .achievement-number::after {
+    .achievement-icon i {
         font-size: 2rem;
     }
     
+    .achievement-number {
+        font-size: 2.8rem;
+        margin-bottom: 10px;
+    }
+    
+    .achievement-number::after {
+        font-size: 2.2rem;
+    }
+    
     .achievement-label {
-        font-size: 0.95rem;
+        font-size: 1rem;
+        line-height: 1.4;
     }
     
     /* تصغير العناوين */
@@ -1680,34 +1722,50 @@ p {
 
     /* 3 صور في الموبايل - في المنتصف */
     .portfolio .portfolio-grid {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 0.8rem;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
         padding: 20px 1rem;
         max-width: 100%;
-        flex-wrap: wrap;
     }
 
     .portfolio .portfolio-item {
-        width: calc(33.333% - 0.6rem);
-        min-width: 100px;
-        max-width: 140px;
-        aspect-ratio: 1 / 1;
+        width: 100%;
     }
 }
 
 @media (max-width: 480px) {
     /* شاشات صغيرة جداً */
     .portfolio .portfolio-grid {
-        gap: 0.6rem;
+        grid-template-columns: 1fr;
+        gap: 1rem;
         padding: 20px 0.8rem;
     }
     
     .portfolio .portfolio-item {
-        width: calc(33.333% - 0.5rem);
-        min-width: 95px;
-        max-width: 120px;
+        width: 100%;
+    }
+    
+    /* تحسين بطاقات الإنجازات على الشاشات الصغيرة جداً */
+    .achievements-grid {
+        gap: 0.8rem;
+    }
+    
+    .achievement-card {
+        padding: 30px 12px;
+        min-height: 180px;
+    }
+    
+    .achievement-number {
+        font-size: 2.5rem;
+    }
+    
+    .achievement-number::after {
+        font-size: 2rem;
+    }
+    
+    .achievement-label {
+        font-size: 0.9rem;
     }
 }
 
@@ -1826,24 +1884,73 @@ p {
 
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
     margin-top: 30px;
     justify-items: center;
+    grid-auto-rows: min-content;
+    align-items: start;
 }
 
 .portfolio-item {
     display: block;
     position: relative;
     width: 100%;
-    padding-bottom: 100%;
+    height: auto;
     border-radius: 15px;
     overflow: hidden;
-    background-size: cover;
-    background-position: center;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
     transition: transform 0.3s ease;
     cursor: default;
+    background: transparent;
+    line-height: 0;
+    align-self: start;
+    justify-self: center;
+}
+
+/* Folder Items */
+.folder-item {
+    background: linear-gradient(135deg, rgba(255, 87, 34, 0.1), rgba(255, 87, 34, 0.2));
+    border: 2px solid var(--accent-orange);
+    cursor: pointer !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px;
+    min-height: 200px;
+    transition: all 0.3s ease;
+}
+
+.folder-item:hover {
+    transform: translateY(-5px);
+    background: linear-gradient(135deg, rgba(255, 87, 34, 0.2), rgba(255, 87, 34, 0.3));
+    box-shadow: 0 10px 30px rgba(255, 87, 34, 0.4);
+}
+
+.folder-icon {
+    margin-bottom: 15px;
+    animation: folderBounce 2s ease-in-out infinite;
+}
+
+@keyframes folderBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.folder-name {
+    color: var(--text-light);
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.4;
+}
+
+.portfolio-item img {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 15px;
 }
 
 .portfolio-item:hover {
@@ -1898,26 +2005,13 @@ p {
     }
 
     .portfolio-grid {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
+        grid-template-columns: 1fr;
         gap: 1rem;
         padding: 0 1rem 2rem;
-        -webkit-overflow-scrolling: touch;
-        justify-content: flex-start;
-        align-items: flex-start;
-    }
-
-    .portfolio-grid::-webkit-scrollbar {
-        display: none;
     }
 
     .portfolio-item {
-        flex: 0 0 calc(25% - 0.75rem);
-        max-width: 120px;
-        height: 120px;
-        padding-bottom: 0;
-        border-radius: 8px;
+        width: 100%;
     }
 }
 

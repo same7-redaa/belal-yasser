@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="animations-enhancements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="translations.js"></script>
 </head>
 <body>
     <!-- Loading Screen -->
@@ -21,22 +22,25 @@
     <header class="main-header">
         <div class="container">
             <nav class="navbar">
-                <a href="index.html" class="logo">
-                    <img src="https://i.postimg.cc/Hxk3YHC5/logo-1.png" alt="Belal Yasser Logo">
-                </a>
+                <div class="logo-language-section">
+                    <a href="index.html" class="logo">
+                        <img src="https://i.postimg.cc/Hxk3YHC5/logo-1.png" alt="Belal Yasser Logo">
+                    </a>
+                    <button class="language-toggle" onclick="toggleLanguage()">English</button>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html#home" class="nav-link" data-translate="nav_home">الرئيسية</a></li>
+                    <li><a href="index.html#about" class="nav-link" data-translate="nav_about">من أنا</a></li>
+                    <li><a href="index.html#services" class="nav-link" data-translate="nav_services">خدماتي</a></li>
+                    <li><a href="index.html#why-me" class="nav-link" data-translate="nav_why_me">لماذا أنا</a></li>
+                    <li><a href="projects.html" class="nav-link" data-translate="nav_portfolio">معرض الأعمال</a></li>
+                    <li><a href="index.html#contact" class="nav-link" data-translate="nav_contact">تواصل معي</a></li>
+                </ul>
                 <button class="menu-toggle" aria-label="Toggle menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                <ul class="nav-menu">
-                    <li><a href="index.html#home" class="nav-link">الرئيسية</a></li>
-                    <li><a href="index.html#about" class="nav-link">من أنا</a></li>
-                    <li><a href="index.html#services" class="nav-link">خدماتي</a></li>
-                    <li><a href="index.html#why-me" class="nav-link">لماذا أنا</a></li>
-                    <li><a href="projects.html" class="nav-link">معرض الأعمال</a></li>
-                    <li><a href="index.html#contact" class="nav-link">تواصل معي</a></li>
-                </ul>
             </nav>
         </div>
     </header>
@@ -54,8 +58,8 @@
                 <div class="adobe-icon"></div>
             </div>
             <div class="container fade-up">
-                <h1>معرض الأعمال</h1>
-                <p class="subtitle centered-subtitle">استكشف مجموعة متنوعة من مشاريع التصميم الإبداعية.</p>
+                <h1 data-translate="projects_page_title">معرض الأعمال</h1>
+                <p class="subtitle centered-subtitle" data-translate="projects_page_subtitle">استكشف مجموعة متنوعة من مشاريع التصميم الإبداعية.</p>
             </div>
         </section>
 
@@ -76,8 +80,8 @@
         <section class="contact-wrapper" id="contact">
             <div class="container">
                 <div class="contact fade-up">
-                    <h2>طرق التواصل</h2>
-                    <p>لنتحدث عن مشروعك القادم ونبني شيئًا رائعًا معًا.</p>
+                    <h2 data-translate="contact_title">طرق التواصل</h2>
+                    <p data-translate="contact_subtitle">لنتحدث عن مشروعك القادم ونبني شيئًا رائعًا معًا.</p>
                     <div class="contact-methods">
                         <a href="tel:+201069125804" class="contact-card">
                             <i class="fas fa-phone"></i>
@@ -102,7 +106,7 @@
 
     <footer class="main-footer">
         <div class="container">
-            <p class="copyright">
+            <p class="copyright" data-translate="footer_text">
                 تم التصميم والتطوير بواسطة: سامح رضا
             </p>
             <div class="footer-social-icons">

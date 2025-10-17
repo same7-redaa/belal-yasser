@@ -51,6 +51,11 @@ const translations = {
         // Why Me Section
         why_me_title: "ليه تختارني؟",
         why_me_subtitle: "أسباب تخليك تثق في خبرتي",
+        why_me_point1: "تصميمات مخصصة لهدف مشروعك مش مجرد شكل حلو.",
+        why_me_point2: "خبرة حقيقية في البراندينج والسوشيال ميديا.",
+        why_me_point3: "مرونة في التعديلات والتسليم في الميعاد.",
+        why_me_point4: "تسليم ملفات جاهزة للطباعة أو للنشر مباشرة.",
+        why_me_point5: "تواصل سهل وسريع طول فترة الشغل.",
         
         reason_experience_title: "خبرة واسعة",
         reason_experience_desc: "4 سنوات من الخبرة في مجال التصميم مع أكثر من 100 مشروع ناجح",
@@ -74,6 +79,10 @@ const translations = {
         portfolio_title: "معرض الأعمال",
         portfolio_subtitle: "المعرض بيتحدث باستمرار بيضم شغلي في البراندينج، السوشيال ميديا، والتصميمات الطباعية.",
         portfolio_view_more: "عرض كل المشاريع",
+        
+        // Projects Page
+        projects_page_title: "معرض الأعمال",
+        projects_page_subtitle: "استكشف مجموعة متنوعة من مشاريع التصميم الإبداعية.",
         
         // Contact Section
         contact_title: "طرق التواصل",
@@ -144,6 +153,11 @@ const translations = {
         // Why Me Section
         why_me_title: "Why Choose Me?",
         why_me_subtitle: "Reasons to trust my expertise",
+        why_me_point1: "Custom designs tailored to your project's goal, not just a pretty look.",
+        why_me_point2: "Real experience in branding and social media.",
+        why_me_point3: "Flexibility in revisions and on-time delivery.",
+        why_me_point4: "Delivery of files ready for printing or direct publishing.",
+        why_me_point5: "Easy and fast communication throughout the work period.",
         
         reason_experience_title: "Extensive Experience",
         reason_experience_desc: "4 years of experience in design field with more than 100 successful projects",
@@ -167,6 +181,10 @@ const translations = {
         portfolio_title: "Portfolio",
         portfolio_subtitle: "The portfolio is constantly updated and includes my work in branding, social media, and print designs.",
         portfolio_view_more: "View All Projects",
+        
+        // Projects Page
+        projects_page_title: "Portfolio",
+        projects_page_subtitle: "Explore a diverse collection of creative design projects.",
         
         // Contact Section
         contact_title: "Contact Methods",
@@ -198,6 +216,9 @@ function setLanguage(lang) {
     document.documentElement.lang = lang;
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
     updatePageContent(lang);
+    
+    // إطلاق حدث لإعلام الصفحات الأخرى بتغيير اللغة
+    window.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
 }
 
 // Function to update page content
@@ -225,7 +246,11 @@ function updatePageContent(lang) {
     }
     
     // Update title
-    document.title = lang === 'ar' ? 'بلال ياسر – مصمم جرافيك مستقل' : 'Belal Yasser - Freelance Graphic Designer';
+    if (window.location.pathname.includes('projects.html')) {
+        document.title = lang === 'ar' ? 'بلال ياسر - معرض الأعمال' : 'Belal Yasser - Portfolio';
+    } else {
+        document.title = lang === 'ar' ? 'بلال ياسر – مصمم جرافيك مستقل' : 'Belal Yasser - Freelance Graphic Designer';
+    }
 }
 
 // Initialize language on page load

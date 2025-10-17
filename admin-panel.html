@@ -169,14 +169,15 @@
         }
 
         .card {
-            background: white;
+            background: #1a1a1a;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .card h2 {
-            color: #667eea;
+            color: var(--accent-orange);
             margin-bottom: 20px;
             font-size: 22px;
         }
@@ -188,7 +189,7 @@
         .form-group label {
             display: block;
             margin-bottom: 8px;
-            color: #333;
+            color: var(--text-light);
             font-weight: 500;
         }
 
@@ -196,16 +197,24 @@
         .form-group select {
             width: 100%;
             padding: 12px;
-            border: 2px solid #e0e0e0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             border-radius: 8px;
             font-size: 14px;
             transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
         }
 
         .form-group input:focus,
         .form-group select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--accent-orange);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .form-group select option {
+            background: #1a1a1a;
+            color: var(--text-light);
         }
 
         .file-input-wrapper {
@@ -416,7 +425,124 @@
             margin-top: 10px;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            overflow: auto;
+        }
+
+        .modal-content {
+            background-color: #1a1a1a;
+            margin: 5% auto;
+            padding: 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            width: 80%;
+            max-width: 800px;
+            box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-header {
+            padding: 20px 30px;
+            background: var(--accent-orange);
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            color: white;
+        }
+
+        .close {
+            color: white;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close:hover {
+            opacity: 0.7;
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .categories-manager {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .add-category-section h3,
+        .existing-categories-section h3 {
+            color: var(--accent-orange);
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .categories-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .category-item {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .category-item.sub-category {
+            margin-left: 30px;
+            border-left: 3px solid var(--accent-orange);
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .category-name-en {
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .category-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .category-actions button {
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
         @media (max-width: 1024px) {
+            .categories-manager {
+                grid-template-columns: 1fr;
+            }
+            
             .content {
                 grid-template-columns: 1fr;
             }
@@ -463,7 +589,8 @@
                             <option value="">-- اختر فئة --</option>
                             <option value="__new__">+ إنشاء فئة جديدة</option>
                         </select>
-                        <input type="text" id="newCategoryInput" class="new-category-input" placeholder="اسم الفئة الجديدة">
+                        <input type="text" id="newCategoryInput" class="new-category-input" placeholder="اسم الفئة الجديدة (عربي)">
+                        <input type="text" id="newCategoryInputEn" class="new-category-input" placeholder="اسم الفئة الجديدة (English)" style="margin-top: 10px;">
                     </div>
 
                     <div class="form-group">
@@ -494,7 +621,12 @@
 
             <!-- Projects List -->
             <div class="card">
-                <h2><i class="fas fa-list"></i> قائمة المشاريع</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;"><i class="fas fa-list"></i> قائمة المشاريع</h2>
+                    <button class="btn" onclick="openCategoriesManager()" style="background: var(--accent-orange);">
+                        <i class="fas fa-folder"></i> إدارة الفئات
+                    </button>
+                </div>
                 
                 <div class="bulk-actions">
                     <button class="btn btn-danger" onclick="bulkDelete()" id="bulkDeleteBtn" disabled>
@@ -530,6 +662,45 @@
                             </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories Manager Modal -->
+    <div id="categoriesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-folder-tree"></i> إدارة الفئات</h2>
+                <span class="close" onclick="closeCategoriesManager()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="categories-manager">
+                    <div class="add-category-section">
+                        <h3>إضافة فئة جديدة</h3>
+                        <div class="form-group">
+                            <label>فئة رئيسية:</label>
+                            <select id="parentCategorySelect">
+                                <option value="">-- فئة رئيسية (بدون تصنيف أب) --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الفئة (عربي):</label>
+                            <input type="text" id="newCatNameAr" placeholder="مثال: تصميم شعارات">
+                        </div>
+                        <div class="form-group">
+                            <label>اسم الفئة (English):</label>
+                            <input type="text" id="newCatNameEn" placeholder="Example: Logo Design">
+                        </div>
+                        <button class="btn btn-primary" onclick="addNewCategory()">
+                            <i class="fas fa-plus"></i> إضافة الفئة
+                        </button>
+                    </div>
+                    
+                    <div class="existing-categories-section">
+                        <h3>الفئات الموجودة</h3>
+                        <div id="categoriesList" class="categories-list"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -588,20 +759,47 @@
             if (e.key === 'Enter') login();
         });
 
-        // Load Categories
+                // Load Categories
         async function loadCategories() {
             try {
                 const { data: projects } = await supabase
                     .from('projects')
-                    .select('category');
+                    .select('category, category_en, parent_category');
 
-                const categories = [...new Set(projects.map(p => p.category))].sort();
-                const select = document.getElementById('projectCategory');
-                
-                select.innerHTML = '<option value="">-- إختر فئة --</option>';
-                categories.forEach(cat => {
-                    select.innerHTML += `<option value="${cat}">${cat}</option>`;
+                // إنشاء Map للفئات مع أسمائها الإنجليزية
+                const categoriesMap = new Map();
+                projects.forEach(p => {
+                    if (!categoriesMap.has(p.category)) {
+                        categoriesMap.set(p.category, {
+                            en: p.category_en || p.category,
+                            parent: p.parent_category
+                        });
+                    }
                 });
+                
+                const select = document.getElementById('projectCategory');
+                select.innerHTML = '<option value="">-- إختر فئة --</option>';
+                
+                // ترتيب الفئات: الرئيسية أولاً ثم الفرعية
+                const mainCategories = Array.from(categoriesMap.keys())
+                    .filter(cat => !categoriesMap.get(cat).parent)
+                    .sort();
+                
+                mainCategories.forEach(cat => {
+                    const catData = categoriesMap.get(cat);
+                    select.innerHTML += `<option value="${cat}" data-category-en="${catData.en}">📁 ${cat}</option>`;
+                    
+                    // إضافة الفئات الفرعية
+                    const subCategories = Array.from(categoriesMap.keys())
+                        .filter(subCat => categoriesMap.get(subCat).parent === cat)
+                        .sort();
+                    
+                    subCategories.forEach(subCat => {
+                        const subData = categoriesMap.get(subCat);
+                        select.innerHTML += `<option value="${subCat}" data-category-en="${subData.en}">   ↳ ${subCat}</option>`;
+                    });
+                });
+                
                 select.innerHTML += '<option value="__new__">+ إنشاء فئة جديدة</option>';
             } catch (error) {
                 console.error('Error loading categories:', error);
@@ -612,13 +810,18 @@
         function toggleNewCategory() {
             const select = document.getElementById('projectCategory');
             const input = document.getElementById('newCategoryInput');
+            const inputEn = document.getElementById('newCategoryInputEn');
             
             if (select.value === '__new__') {
                 input.style.display = 'block';
+                inputEn.style.display = 'block';
                 input.required = true;
+                inputEn.required = true;
             } else {
                 input.style.display = 'none';
+                inputEn.style.display = 'none';
                 input.required = false;
+                inputEn.required = false;
             }
         }
 
@@ -698,14 +901,22 @@
         document.getElementById('projectForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
-            let category = document.getElementById('projectCategory').value;
+            const categorySelect = document.getElementById('projectCategory');
+            let category = categorySelect.value;
+            let categoryEn = '';
             const newCategory = document.getElementById('newCategoryInput').value;
+            const newCategoryEn = document.getElementById('newCategoryInputEn').value;
             const images = document.getElementById('projectImages').files;
             const showOnHomepage = document.getElementById('showOnHomepage').checked;
             const submitBtn = document.getElementById('submitBtn');
 
             if (category === '__new__') {
                 category = newCategory;
+                categoryEn = newCategoryEn;
+            } else {
+                // الحصول على category_en من الفئة المختارة
+                const selectedOption = categorySelect.options[categorySelect.selectedIndex];
+                categoryEn = selectedOption.getAttribute('data-category-en') || category;
             }
 
             if (!category || images.length === 0) {
@@ -747,9 +958,25 @@
                     
                     const imageUrl = publicUrlData.publicUrl;
 
-                    // Insert project - بدون حقل name
+                    // الحصول على parent_category من الفئة المختارة (إذا لم تكن فئة جديدة)
+                    let parentCategory = null;
+                    if (category !== '__new__') {
+                        const { data: existingProjects } = await supabase
+                            .from('projects')
+                            .select('parent_category')
+                            .eq('category', category)
+                            .limit(1);
+                        
+                        if (existingProjects && existingProjects.length > 0) {
+                            parentCategory = existingProjects[0].parent_category;
+                        }
+                    }
+
+                    // Insert project - مع حقل category_en و parent_category
                     const projectData = {
                         category: category,
+                        category_en: categoryEn || category,
+                        parent_category: parentCategory,
                         image_url: imageUrl,
                         show_on_homepage: showOnHomepage
                     };
@@ -979,6 +1206,202 @@
             setTimeout(() => {
                 statusDiv.style.display = 'none';
             }, 5000);
+        }
+
+        // Categories Management Functions
+        let categoriesData = [];
+
+        function openCategoriesManager() {
+            document.getElementById('categoriesModal').style.display = 'block';
+            loadCategoriesForManager();
+        }
+
+        function closeCategoriesManager() {
+            document.getElementById('categoriesModal').style.display = 'none';
+        }
+
+        async function loadCategoriesForManager() {
+            try {
+                const { data: projects } = await supabase
+                    .from('projects')
+                    .select('category, category_en, parent_category');
+
+                // تجميع الفئات الفريدة
+                const categoriesMap = new Map();
+                projects.forEach(p => {
+                    const key = p.category;
+                    if (!categoriesMap.has(key)) {
+                        categoriesMap.set(key, {
+                            ar: p.category,
+                            en: p.category_en || p.category,
+                            parent: p.parent_category || null
+                        });
+                    }
+                });
+
+                categoriesData = Array.from(categoriesMap.entries()).map(([key, value]) => ({
+                    category: key,
+                    category_en: value.en,
+                    parent_category: value.parent
+                }));
+
+                renderCategoriesList();
+                updateParentCategorySelect();
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            }
+        }
+
+        function updateParentCategorySelect() {
+            const select = document.getElementById('parentCategorySelect');
+            const mainCategories = categoriesData.filter(c => !c.parent_category);
+            
+            select.innerHTML = '<option value="">-- فئة رئيسية (بدون تصنيف أب) --</option>';
+            mainCategories.forEach(cat => {
+                select.innerHTML += `<option value="${cat.category}">${cat.category} / ${cat.category_en}</option>`;
+            });
+        }
+
+        function renderCategoriesList() {
+            const container = document.getElementById('categoriesList');
+            const mainCategories = categoriesData.filter(c => !c.parent_category);
+            const subCategories = categoriesData.filter(c => c.parent_category);
+
+            container.innerHTML = '';
+
+            mainCategories.forEach(cat => {
+                const catDiv = createCategoryItem(cat, false);
+                container.appendChild(catDiv);
+
+                // إضافة الفئات الفرعية
+                const subs = subCategories.filter(s => s.parent_category === cat.category);
+                subs.forEach(sub => {
+                    const subDiv = createCategoryItem(sub, true);
+                    container.appendChild(subDiv);
+                });
+            });
+        }
+
+        function createCategoryItem(cat, isSub) {
+            const div = document.createElement('div');
+            div.className = isSub ? 'category-item sub-category' : 'category-item';
+            
+            div.innerHTML = `
+                <div class="category-info">
+                    <div class="category-name">${isSub ? '↳ ' : ''}${cat.category}</div>
+                    <div class="category-name-en">${cat.category_en}</div>
+                </div>
+                <div class="category-actions">
+                    <button class="btn" onclick="editCategory('${cat.category}')" style="background: #4CAF50;">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteCategory('${cat.category}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            
+            return div;
+        }
+
+        async function addNewCategory() {
+            const parentCat = document.getElementById('parentCategorySelect').value;
+            const nameAr = document.getElementById('newCatNameAr').value.trim();
+            const nameEn = document.getElementById('newCatNameEn').value.trim();
+
+            if (!nameAr || !nameEn) {
+                alert('يرجى إدخال اسم الفئة بكلا اللغتين');
+                return;
+            }
+
+            try {
+                // إضافة مشروع وهمي بالفئة الجديدة (لحفظ الفئة في قاعدة البيانات)
+                const dummyData = {
+                    category: nameAr,
+                    category_en: nameEn,
+                    parent_category: parentCat || null,
+                    image_url: 'https://via.placeholder.com/1',
+                    show_on_homepage: false
+                };
+
+                const { error } = await supabase
+                    .from('projects')
+                    .insert([dummyData]);
+
+                if (error) throw error;
+
+                // مسح الحقول
+                document.getElementById('newCatNameAr').value = '';
+                document.getElementById('newCatNameEn').value = '';
+                document.getElementById('parentCategorySelect').value = '';
+
+                loadCategoriesForManager();
+                loadCategories(); // تحديث القائمة الرئيسية
+                showStatus('تم إضافة الفئة بنجاح', 'success');
+            } catch (error) {
+                console.error('Error adding category:', error);
+                showStatus('خطأ في إضافة الفئة', 'error');
+            }
+        }
+
+        async function editCategory(categoryName) {
+            const cat = categoriesData.find(c => c.category === categoryName);
+            if (!cat) return;
+
+            const newNameAr = prompt('الاسم الجديد (عربي):', cat.category);
+            if (!newNameAr || newNameAr === cat.category) return;
+
+            const newNameEn = prompt('الاسم الجديد (English):', cat.category_en);
+            if (!newNameEn) return;
+
+            try {
+                // تحديث جميع المشاريع بهذه الفئة
+                const { error } = await supabase
+                    .from('projects')
+                    .update({ 
+                        category: newNameAr,
+                        category_en: newNameEn 
+                    })
+                    .eq('category', categoryName);
+
+                if (error) throw error;
+
+                loadCategoriesForManager();
+                loadCategories();
+                showStatus('تم تحديث الفئة بنجاح', 'success');
+            } catch (error) {
+                console.error('Error editing category:', error);
+                showStatus('خطأ في تحديث الفئة', 'error');
+            }
+        }
+
+        async function deleteCategory(categoryName) {
+            if (!confirm(`هل تريد حذف الفئة "${categoryName}" وجميع المشاريع التابعة لها؟`)) return;
+
+            try {
+                const { error } = await supabase
+                    .from('projects')
+                    .delete()
+                    .eq('category', categoryName);
+
+                if (error) throw error;
+
+                loadCategoriesForManager();
+                loadCategories();
+                loadProjects();
+                showStatus('تم حذف الفئة بنجاح', 'success');
+            } catch (error) {
+                console.error('Error deleting category:', error);
+                showStatus('خطأ في حذف الفئة', 'error');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('categoriesModal');
+            if (event.target == modal) {
+                closeCategoriesManager();
+            }
         }
     </script>
 </body>

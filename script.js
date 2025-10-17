@@ -207,7 +207,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     .from('projects')
                     .select('image_url')
                     .or('show_on_homepage.eq.true,show_on_homepage.is.null')
-                    .order('id', { ascending: false })
+                    .order('id', { ascending: true })
                     .limit(3);
 
                 if (error) {
