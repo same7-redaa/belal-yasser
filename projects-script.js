@@ -1,55 +1,43 @@
-// إعداد Supabase Client
-const SUPABASE_URL = 'https://bkvcmceyxsgzvvcozwkf.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrdmNtY2V5eHNnenZ2Y296d2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDAyODQsImV4cCI6MjA3NTY3NjI4NH0.TtZg_fT1gBCfxx7jT9bTk_ylm7kAjQGflCbMKcyZJWY';
-
-let supabase;
-
-// التحقق من تحميل مكتبة Supabase
-if (typeof window.supabase !== 'undefined') {
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('✅ Supabase client initialized successfully');
-} else {
-    console.error('❌ Supabase library not loaded. Make sure the script tag is included.');
-}
+// Firebase Configuration (استبدال Supabase بـ Firebase)
+import { db, collection, getDocs, query, orderBy } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const categoriesContainer = document.querySelector('.category-list');
     const projectsContainer = document.getElementById('portfolio-grid-container');
     let allProjectsData = [];
+    let allCategoriesData = {};
+    let currentCategory = 'الكل';
+    let navigationHistory = []; // Track navigation history
+    let parentCategoryMap = {}; // Map subcategory to parent
 
     async function fetchAllProjects() {
-        if (!supabase) {
-            console.error('❌ Supabase client not initialized');
-            projectsContainer.innerHTML = '<p>خطأ في الاتصال بقاعدة البيانات.</p>';
-            return [];
-        }
-
         try {
-            console.log('🔄 Fetching projects from Supabase...');
+            console.log('🔄 Fetching projects and categories from Firebase...');
             
-            // محاولة الجلب مع الترتيب حسب created_at (من الأقدم للأحدث)
-            let { data: projects, error } = await supabase
-                .from('projects')
-                .select('*')
-                .order('created_at', { ascending: true });
-
-            // إذا فشل بسبب عدم وجود created_at، جرب بترتيب id (من الأقدم للأحدث)
-            if (error && error.message.includes('created_at')) {
-                console.log('⚠️ Column created_at not found, fetching with id ordering...');
-                const result = await supabase
-                    .from('projects')
-                    .select('*')
-                    .order('id', { ascending: true });
-                
-                projects = result.data;
-                error = result.error;
-            }
-
-            if (error) {
-                console.error('❌ Error fetching projects:', error);
-                projectsContainer.innerHTML = `<p>حدث خطأ أثناء تحميل المشاريع: ${error.message}</p>`;
-                return [];
-            }
+            // Load categories first
+            const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+            categoriesSnapshot.docs.forEach(doc => {
+                allCategoriesData[doc.id] = { id: doc.id, ...doc.data() };
+            });
+            
+            // Load images
+            const q = query(collection(db, 'images'), orderBy('createdAt', 'desc'));
+            const snapshot = await getDocs(q);
+            const projects = snapshot.docs.map(doc => {
+                const data = doc.data();
+                const cat = allCategoriesData[data.categoryId] || { nameAr: 'غير مصنف', nameEn: 'Uncategorized' };
+                return {
+                    id: doc.id,
+                    image_url: data.url,
+                    category: cat.nameAr,
+                    category_en: cat.nameEn,
+                    categoryId: data.categoryId,
+                    parent_category: cat.parentId || null,
+                    show_on_homepage: data.showOnHomepage || false,
+                    name: data.name || '',
+                    description: data.description || ''
+                };
+            });
 
             console.log('✅ Projects fetched successfully:', projects);
             return projects || [];
@@ -60,43 +48,64 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function renderProjects(projectsToRender, showSubFolders = false, parentCategory = null) {
+    function renderProjects(projectsToRender, selectedCategory = 'الكل') {
         projectsContainer.innerHTML = '';
         
-        if (projectsToRender.length === 0 && !showSubFolders) {
-            const currentLang = document.documentElement.lang || 'ar';
-            const noCategoryText = currentLang === 'ar' 
-                ? '<p style="text-align: center; width: 100%; grid-column: 1 / -1;">لا توجد مشاريع في هذه الفئة حالياً.</p>'
-                : '<p style="text-align: center; width: 100%; grid-column: 1 / -1;">No projects in this category currently.</p>';
-            projectsContainer.innerHTML = noCategoryText;
-            return;
-        }
-
-        const currentLang = document.documentElement.lang || 'ar';
-
-        // إذا كانت فئة رئيسية، نعرض الفئات الفرعية كفولدرات
-        if (showSubFolders) {
-            const subCategories = [...new Set(allProjectsData
-                .filter(p => p.parent_category === parentCategory)
-                .map(p => ({ category: p.category, category_en: p.category_en })))];
+        console.log('📂 Rendering projects for category:', selectedCategory);
+        console.log('📊 Projects to render:', projectsToRender.length);
+        
+        // If showing a main category, show subfolders first
+        if (selectedCategory !== 'الكل') {
+            // Find the category ID
+            const mainCat = Object.values(allCategoriesData).find(c => c.nameAr === selectedCategory);
+            console.log('🔍 Found main category:', mainCat);
             
-            subCategories.forEach(subCat => {
-                const folderItem = document.createElement('div');
-                folderItem.className = 'portfolio-item folder-item fade-up';
-                folderItem.onclick = () => filterProjects(subCat.category);
+            if (mainCat && !mainCat.parentId) { // Only show folders if it's a main category
+                // Get subcategories
+                const subCategories = Object.values(allCategoriesData).filter(c => c.parentId === mainCat.id);
+                console.log('📁 Found subcategories:', subCategories.length);
                 
-                const folderIcon = document.createElement('div');
-                folderIcon.className = 'folder-icon';
-                folderIcon.innerHTML = '<i class="fas fa-folder" style="font-size: 60px; color: var(--accent-orange);"></i>';
-                
-                const folderName = document.createElement('div');
-                folderName.className = 'folder-name';
-                folderName.textContent = currentLang === 'ar' ? subCat.category : (subCat.category_en || subCat.category);
-                
-                folderItem.appendChild(folderIcon);
-                folderItem.appendChild(folderName);
-                projectsContainer.appendChild(folderItem);
-            });
+                // Create folder cards for subcategories that have images
+                subCategories.forEach(subCat => {
+                    const hasImages = allProjectsData.some(p => p.categoryId === subCat.id);
+                    console.log(`📂 ${subCat.nameAr} has images:`, hasImages);
+                    
+                    if (hasImages) {
+                        const folderCard = document.createElement('div');
+                        folderCard.className = 'portfolio-item folder-item fade-up';
+                        folderCard.style.cursor = 'pointer';
+                        folderCard.style.minHeight = '250px';
+                        folderCard.onmouseover = () => {
+                            folderCard.style.transform = 'translateY(-5px)';
+                        };
+                        folderCard.onmouseout = () => {
+                            folderCard.style.transform = 'translateY(0)';
+                        };
+                        folderCard.onclick = () => {
+                            console.log('🖱️ Clicked folder:', subCat.nameAr);
+                            // Store parent category before navigating to subfolder
+                            filterProjects(subCat.nameAr, true, mainCat.nameAr);
+                        };
+                        
+                        folderCard.innerHTML = `
+                            <i class="fas fa-folder" style="font-size: 80px; color: var(--accent-orange, #FF5722); margin-bottom: 20px;"></i>
+                            <h3 style="margin: 0; font-size: 20px; text-align: center; font-weight: bold; color: var(--text-light, #f5f5f5);">${subCat.nameAr}</h3>
+                        `;
+                        folderCard.style.display = 'flex';
+                        folderCard.style.flexDirection = 'column';
+                        folderCard.style.alignItems = 'center';
+                        folderCard.style.justifyContent = 'center';
+                        folderCard.style.padding = '20px';
+                        
+                        projectsContainer.appendChild(folderCard);
+                    }
+                });
+            }
+        }
+        
+        if (projectsToRender.length === 0 && projectsContainer.children.length === 0) {
+            projectsContainer.innerHTML = '<p style="text-align: center; width: 100%;">لا توجد مشاريع في هذه الفئة</p>';
+            return;
         }
 
         // عرض الصور
@@ -106,22 +115,17 @@ document.addEventListener('DOMContentLoaded', () => {
             projectItem.target = '_blank';
             projectItem.className = 'portfolio-item fade-up';
             
-            // إنشاء عنصر img بحجمه الطبيعي
             const img = document.createElement('img');
             img.src = project.image_url;
-            const categoryName = currentLang === 'ar' ? project.category : (project.category_en || project.category);
-            img.alt = categoryName || 'Project Image';
+            img.alt = project.name || 'Project Image';
             img.style.width = '100%';
             img.style.height = 'auto';
             img.style.display = 'block';
-            img.style.objectFit = 'contain';
+            img.style.objectFit = 'cover';
             
-            // إضافة معالج للأخطاء
             img.onerror = function() {
                 console.error('Failed to load image:', project.image_url);
-                this.style.display = 'none';
-                projectItem.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                projectItem.innerHTML = '<span style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #aaa;">⚠️</span>';
+                this.parentElement.style.display = 'none';
             };
             
             projectItem.appendChild(img);
@@ -135,27 +139,48 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 100);
     }
 
-    function filterProjects(category) {
+    function filterProjects(category, addToHistory = true, parentCategory = null) {
+        currentCategory = category;
+        
+        // Store parent relationship if provided
+        if (parentCategory) {
+            parentCategoryMap[category] = parentCategory;
+        }
+        
+        // Add to history if it's a new navigation (not back button)
+        if (addToHistory) {
+            navigationHistory.push(category);
+            console.log('📚 Navigation history:', navigationHistory);
+        }
+        
+        // Update URL hash for browser back button support
+        window.location.hash = category === 'الكل' ? '' : category;
+        
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.querySelector(`[data-category-name="${category}"]`);
         if (activeBtn) activeBtn.classList.add('active');
 
         if (category === 'الكل') {
-            renderProjects(allProjectsData);
+            // Show only main categories (no parent)
+            const mainCategoryImages = allProjectsData.filter(p => {
+                const cat = Object.values(allCategoriesData).find(c => c.id === p.categoryId);
+                return cat && !cat.parentId;
+            });
+            renderProjects(mainCategoryImages, 'الكل');
         } else {
-            // التحقق إذا كانت فئة رئيسية بها فئات فرعية
-            const hasSubCategories = allProjectsData.some(p => p.parent_category === category);
+            // Find the selected category
+            const selectedCat = Object.values(allCategoriesData).find(c => c.nameAr === category);
             
-            if (hasSubCategories) {
-                // عرض الفئات الفرعية كفولدرات + صور الفئة الرئيسية
-                const mainCategoryProjects = allProjectsData.filter(p => 
-                    p.category === category && !p.parent_category
-                );
-                renderProjects(mainCategoryProjects, true, category);
-            } else {
-                // عرض الصور فقط
-                const filtered = allProjectsData.filter(p => p.category === category);
-                renderProjects(filtered);
+            if (selectedCat) {
+                // If it's a main category, show only its direct images (not subcategory images)
+                if (!selectedCat.parentId) {
+                    const directImages = allProjectsData.filter(p => p.categoryId === selectedCat.id);
+                    renderProjects(directImages, category);
+                } else {
+                    // If it's a subcategory, show its images
+                    const filtered = allProjectsData.filter(p => p.category === category);
+                    renderProjects(filtered, category);
+                }
             }
         }
     }
@@ -163,62 +188,122 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initializePortfolio() {
         if (!categoriesContainer || !projectsContainer) return;
 
-        const currentLang = document.documentElement.lang || 'ar';
-        const loadingText = currentLang === 'ar' ? '<p>جاري تحميل المشاريع...</p>' : '<p>Loading projects...</p>';
-        projectsContainer.innerHTML = loadingText;
+        projectsContainer.innerHTML = '<p style="text-align: center; width: 100%; color: var(--text-light);">جاري تحميل المشاريع...</p>';
         allProjectsData = await fetchAllProjects();
 
         if (allProjectsData.length > 0) {
-            const currentLang = document.documentElement.lang || 'ar';
-            
-            // إنشاء قائمة فريدة من الفئات الرئيسية فقط
+            // Load all categories from Firebase to build hierarchy
+            const categoriesSnapshot = await getDocs(collection(db, 'categories'));
+            const allCategories = {};
+            categoriesSnapshot.docs.forEach(doc => {
+                allCategories[doc.id] = { id: doc.id, ...doc.data() };
+            });
+
+            // Get unique categories from projects
             const categoriesMap = new Map();
             allProjectsData.forEach(p => {
-                // عرض الفئات الرئيسية فقط (بدون parent_category)
-                if (!p.parent_category && !categoriesMap.has(p.category)) {
+                if (!categoriesMap.has(p.category)) {
                     categoriesMap.set(p.category, {
                         ar: p.category,
                         en: p.category_en || p.category
                     });
                 }
             });
-            const categories = Array.from(categoriesMap.keys()).sort();
 
+            // زر "الكل"
             const allBtn = document.createElement('a');
             allBtn.href = '#';
             allBtn.className = 'category-btn active';
-            allBtn.textContent = currentLang === 'ar' ? 'الكل' : 'All';
+            allBtn.textContent = 'الكل';
             allBtn.dataset.categoryName = 'الكل';
-            allBtn.addEventListener('click', (e) => {
+            allBtn.onclick = (e) => {
                 e.preventDefault();
                 filterProjects('الكل');
-            });
+            };
             categoriesContainer.appendChild(allBtn);
 
-            categories.forEach(category => {
-                const btn = document.createElement('a');
-                btn.href = '#';
-                btn.className = 'category-btn';
-                const categoryData = categoriesMap.get(category);
-                btn.textContent = currentLang === 'ar' ? categoryData.ar : categoryData.en;
-                btn.dataset.categoryName = category;
-                btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    filterProjects(category);
-                });
-                categoriesContainer.appendChild(btn);
+            // Build category hierarchy
+            const mainCategories = Object.values(allCategories).filter(c => !c.parentId);
+            const subCategories = Object.values(allCategories).filter(c => c.parentId);
+
+            mainCategories.forEach(mainCat => {
+                // Check if main category has projects (direct or in subcategories)
+                const hasDirectProjects = allProjectsData.some(p => p.categoryId === mainCat.id);
+                const subs = subCategories.filter(s => s.parentId === mainCat.id);
+                const hasSubProjects = subs.some(sub => allProjectsData.some(p => p.categoryId === sub.id));
+                
+                if (hasDirectProjects || hasSubProjects) {
+                    const btn = document.createElement('a');
+                    btn.href = '#';
+                    btn.className = 'category-btn';
+                    btn.textContent = mainCat.nameAr;
+                    btn.dataset.categoryName = mainCat.nameAr;
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        filterProjects(mainCat.nameAr);
+                    };
+                    categoriesContainer.appendChild(btn);
+                }
             });
 
-            renderProjects(allProjectsData);
+            // Show "الكل" view by default
+            navigationHistory = ['الكل'];
+            filterProjects('الكل', false);
         } else {
-            const noProjectsText = document.documentElement.lang === 'en' 
-                ? '<p>No projects to display currently.</p>' 
-                : '<p>لا توجد مشاريع لعرضها حالياً.</p>';
-            projectsContainer.innerHTML = noProjectsText;
+            projectsContainer.innerHTML = '<p>لا توجد مشاريع لعرضها حالياً.</p>';
         }
     }
 
     initializePortfolio();
+    
+    // Handle browser back/forward buttons
+    window.addEventListener('hashchange', (event) => {
+        const hash = window.location.hash.substring(1);
+        const targetCategory = hash ? decodeURIComponent(hash) : 'الكل';
+        
+        console.log('⬅️ Hash changed to:', targetCategory);
+        console.log('📍 Current category:', currentCategory);
+        
+        // Don't navigate if we're already there
+        if (targetCategory !== currentCategory) {
+            // Don't add to history when navigating via hash change
+            currentCategory = targetCategory;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.querySelector(`[data-category-name="${targetCategory}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            // Re-render based on category
+            if (targetCategory === 'الكل') {
+                const mainCategoryImages = allProjectsData.filter(p => {
+                    const cat = Object.values(allCategoriesData).find(c => c.id === p.categoryId);
+                    return cat && !cat.parentId;
+                });
+                renderProjects(mainCategoryImages, 'الكل');
+            } else {
+                const selectedCat = Object.values(allCategoriesData).find(c => c.nameAr === targetCategory);
+                if (selectedCat) {
+                    if (!selectedCat.parentId) {
+                        const directImages = allProjectsData.filter(p => p.categoryId === selectedCat.id);
+                        renderProjects(directImages, targetCategory);
+                    } else {
+                        const filtered = allProjectsData.filter(p => p.category === targetCategory);
+                        renderProjects(filtered, targetCategory);
+                    }
+                }
+            }
+        }
+    });
+    
+    // Handle hash on page load (if user bookmarked a specific category)
+    if (window.location.hash) {
+        const hashCategory = decodeURIComponent(window.location.hash.substring(1));
+        if (hashCategory) {
+            setTimeout(() => {
+                filterProjects(hashCategory, false);
+            }, 500);
+        }
+    }
     
     // تحميل اللغة المحفوظة عند فتح الصفحة
     const savedLanguage = localStorage.getItem('language') || 'ar';

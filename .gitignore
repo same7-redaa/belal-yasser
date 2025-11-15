@@ -1,0 +1,42 @@
+# .gitignore - استبعاد ملفات غير ضرورية
+
+# ملفات التوثيق القديمة (Supabase)
+*.md
+!README.md
+!CONTROL_GUIDE.md
+
+# ملفات SQL القديمة
+*.sql
+
+# ملفات اختبار
+test-supabase.html
+debug-projects.html
+admin-panel.html
+
+# ملفات نظام التشغيل
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ملفات المحرر
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ملفات مؤقتة
+*.tmp
+*.temp
+*.log
+
+# مجلد الصور المحلية (نستخدم Google Drive)
+projects/
+
+# Node modules (إذا استخدمت npm)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Firebase config (للأمان - استخدم Environment Variables)
+# firebase-config.js

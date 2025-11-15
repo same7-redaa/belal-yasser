@@ -1,201 +1,191 @@
-# 🎨 موقع بلال ياسر - Portfolio
+# 🎨 موقع بلال ياسر - Portfolio Website
 
-موقع بورتفوليو احترافي لمصمم جرافيك مع نظام إدارة محتوى متكامل باستخدام Supabase.
+موقع بورتفوليو احترافي لعرض أعمال التصميم الجرافيكي مع لوحة تحكم كاملة.
 
-## 📋 المحتويات
+## 🌟 المميزات
 
-- [الميزات](#-الميزات)
-- [التقنيات المستخدمة](#-التقنيات-المستخدمة)
-- [البدء السريع](#-البدء-السريع)
-- [إعداد Supabase](#-إعداد-supabase)
-- [الملفات الرئيسية](#-الملفات-الرئيسية)
-- [حل المشاكل](#-حل-المشاكل)
+### 🎯 الموقع الرئيسي
+- **تصميم احترافي متجاوب** - يعمل على جميع الأجهزة
+- **نظام عرض متقدم** - عرض مميز للمشاريع المختارة (Featured Projects)
+- **تنظيم هرمي للمشاريع** - تصنيفات رئيسية وفرعية
+- **دعم كامل للغتين** - العربية والإنجليزية مع RTL/LTR
+- **تحميل سريع** - صور محسنة من Google Drive
 
-## ✨ الميزات
-
-- 🎯 تصميم عصري وجذاب
-- 📱 متجاوب مع جميع الأجهزة
-- 🗄️ نظام إدارة محتوى ديناميكي
-- 🖼️ معرض أعمال تفاعلي مع تصنيفات
-- 📤 رفع الصور مباشرة إلى السحابة
-- ⚡ أداء سريع وتحميل فوري
-- 🔒 آمن ومحمي
+### 🎛️ لوحة التحكم
+- **إدارة كاملة للتصنيفات** - إضافة وتعديل وحذف
+- **نظام التصنيفات الفرعية** - تنظيم هرمي للمشاريع
+- **إدارة الصور** - رفع وتعديل وحذف
+- **نظام المشاريع المميزة** - اختيار 3 مشاريع للعرض في الصفحة الرئيسية
+- **محول Google Drive تلقائي** - تحويل روابط Google Drive للعرض المباشر
+- **واجهة سهلة الاستخدام** - تصميم بسيط وواضح
 
 ## 🛠️ التقنيات المستخدمة
 
-- **Frontend:**
-  - HTML5
-  - CSS3 (مع تأثيرات متقدمة)
-  - JavaScript (Vanilla JS)
-  - Font Awesome Icons
+- **HTML5** - بنية الموقع
+- **CSS3** - التصميم والتنسيق
+- **JavaScript (ES6+)** - البرمجة
+- **Firebase v10.7.1** - قاعدة البيانات والمصادقة
+  - Firestore - تخزين البيانات
+  - Authentication - نظام الدخول
+- **Google Drive** - استضافة الصور
+- **Font Awesome** - الأيقونات
 
-- **Backend & Database:**
-  - Supabase (PostgreSQL)
-  - Supabase Storage
+## 📁 هيكل المشروع
 
-- **Hosting:**
-  - يمكن استضافته على أي خدمة استضافة ثابتة (Netlify, Vercel, GitHub Pages, إلخ)
+```
+📦 belal-yasser/
+├── 📄 index.html              # الصفحة الرئيسية
+├── 📄 projects.html           # صفحة المشاريع
+├── 📄 control.html            # لوحة التحكم
+├── 🎨 style.css               # ملف التنسيق الرئيسي
+├── 📜 script.js               # سكريبت الصفحة الرئيسية
+├── 📜 projects-script.js      # سكريبت صفحة المشاريع
+├── 🔥 firebase-config.js      # إعدادات Firebase
+├── 🌐 translations.js         # ترجمات الموقع
+└── 📁 fonts/                  # الخطوط العربية
+    └── Nahdi-Black.ttf
+```
 
 ## 🚀 البدء السريع
 
-### 1. تحميل المشروع
+### 1. إعداد Firebase
 
-```bash
-# استنساخ المشروع أو تحميله
-cd بلال
+1. أنشئ مشروع جديد على [Firebase Console](https://console.firebase.google.com/)
+2. فعّل **Firestore Database**
+3. فعّل **Authentication** (Email/Password)
+4. انسخ بيانات الاعتماد وحدث ملف `firebase-config.js`
+
+### 2. إعداد Firestore
+
+أنشئ مجموعتين (Collections):
+
+#### Categories Collection
+```javascript
+{
+  name: "اسم التصنيف",
+  nameEn: "Category Name",
+  parentId: null, // أو ID التصنيف الأب للتصنيفات الفرعية
+  order: 1
+}
 ```
 
-### 2. اختبار الاتصال
-
-افتح ملف `test-supabase.html` في المتصفح لاختبار الاتصال بـ Supabase.
-
-### 3. إعداد قاعدة البيانات
-
-اتبع التعليمات في ملف `SUPABASE_SETUP.md` لإعداد:
-- جدول المشاريع
-- Storage Bucket
-- السياسات الأمنية
-
-### 4. تشغيل الموقع
-
-افتح `index.html` في المتصفح أو استخدم Live Server.
-
-## 🗄️ إعداد Supabase
-
-### الخطوة 1: إنشاء الجدول
-
-```sql
-CREATE TABLE projects (
-  id BIGSERIAL PRIMARY KEY,
-  name TEXT NOT NULL,
-  category TEXT NOT NULL,
-  image_url TEXT NOT NULL,
-  created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
-);
+#### Images Collection
+```javascript
+{
+  title: "عنوان المشروع",
+  description: "وصف المشروع",
+  imageUrl: "رابط الصورة من Google Drive",
+  categoryId: "ID التصنيف",
+  isFeaturedProject: false,
+  createdAt: timestamp
+}
 ```
 
-### الخطوة 2: تفعيل Row Level Security
+### 3. إعداد المصادقة
 
-```sql
-ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
+1. اذهب إلى **Authentication** في Firebase
+2. فعّل طريقة **Email/Password**
+3. أضف مستخدم إداري جديد
+4. استخدم البريد وكلمة المرور للدخول إلى لوحة التحكم
 
-CREATE POLICY "Enable read access for all users" ON projects
-  FOR SELECT USING (true);
+### 4. رفع الملفات
 
-CREATE POLICY "Enable insert for all users" ON projects
-  FOR INSERT WITH CHECK (true);
-```
+ارفع الملفات التالية إلى الاستضافة:
+- ✅ index.html
+- ✅ projects.html
+- ✅ control.html
+- ✅ style.css
+- ✅ script.js
+- ✅ projects-script.js
+- ✅ firebase-config.js
+- ✅ translations.js
+- ✅ fonts/Nahdi-Black.ttf
 
-### الخطوة 3: إنشاء Storage Bucket
+## 🎯 كيفية الاستخدام
 
-1. اذهب إلى Storage في لوحة تحكم Supabase
-2. أنشئ bucket جديد باسم `portfolio-images`
-3. اجعله **Public**
+### للمستخدمين العاديين:
+1. **الصفحة الرئيسية** - عرض المشاريع المميزة والخدمات
+2. **صفحة المشاريع** - تصفح جميع المشاريع مع إمكانية الفلترة
 
-### الخطوة 4: سياسات Storage
-
-```sql
-CREATE POLICY "Enable upload for all users" ON storage.objects
-  FOR INSERT WITH CHECK (bucket_id = 'portfolio-images');
-
-CREATE POLICY "Enable read access for all users" ON storage.objects
-  FOR SELECT USING (bucket_id = 'portfolio-images');
-```
-
-## 📁 الملفات الرئيسية
-
-```
-بلال/
-├── index.html              # الصفحة الرئيسية
-├── projects.html           # صفحة معرض الأعمال الكامل
-├── admin-panel.html        # لوحة التحكم لإضافة المشاريع
-├── test-supabase.html      # صفحة اختبار الاتصال
-├── style.css               # ملف التنسيقات
-├── script.js               # سكريبت الصفحة الرئيسية
-├── projects-script.js      # سكري��ت صفحة المشاريع
-├── SUPABASE_SETUP.md       # دليل إعداد Supabase
-├── TROUBLESHOOTING.md      # دليل حل المشاكل
-└── README.md               # هذا الملف
-```
-
-## 🎯 كيفية الاستخدا��
-
-### إضافة مشروع جديد
-
-1. افتح `admin-panel.html`
-2. املأ البيانات:
-   - اسم المشروع
-   - فئة المشروع (مثل: هوية بصرية، سوشيال ميديا، إلخ)
-   - صورة المشروع
-3. اضغط "إضافة المشروع"
-4. سيتم رفع الصورة وحفظ البيانات تلقائياً
-
-### عرض المشاريع
-
-- **الصفحة الرئيسية:** تعرض 6 مشاريع عشوائية
-- **صفحة المشاريع:** تعرض جميع المشاريع مع إمكانية التصفية حسب الفئة
-
-## 🔧 حل المشاكل
-
-### المشاريع لا تظهر؟
-
-1. افتح `test-supabase.html` وشغل جميع الاختبارات
-2. افتح Console المتصفح (F12) وابحث عن الأخطاء
-3. تحقق من:
-   - ✅ وجود جدول `projects`
-   - ✅ سياسات RLS مضبوطة
-   - ✅ وجود مشاريع في قاعدة البيانات
-
-### لا يتم رفع الصور؟
-
-1. تحقق من وجود bucket `portfolio-images`
-2. تأكد أن الـ bucket عام (Public)
-3. تحقق من سياسات Storage
-
-### للمزيد من التفاصيل
-
-راجع ملف `TROUBLESHOOTING.md` للحصول على ��ليل شامل لحل المشاكل.
+### للمدير (Admin):
+1. افتح صفحة `control.html`
+2. سجل الدخول ببياناتك
+3. استخدم التبويبات:
+   - **Categories** - إدارة التصنيفات
+   - **Images** - إدارة المشاريع والصور
 
 ## 🔐 الأمان
 
-⚠️ **ملاحظة مهمة:** 
+⚠️ **مهم جداً:**
+- لا تنشر ملف `firebase-config.js` مع بيانات حقيقية على GitHub العام
+- استخدم **Firebase Security Rules** لحماية البيانات
+- غيّر كلمة مرور المدير بشكل دوري
 
-السياسات الحالية تسمح للجميع بإضافة وتعديل المشاريع. لتأمين لوحة التحكم:
+### قواعد Firestore الموصى بها:
 
-1. أضف نظام مصادقة (Authentication)
-2. عدّل السياسات لتقييد الوصول
-3. استخدم Service Role Key للعمليات الإدارية
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // السماح بالقراءة للجميع
+    match /{document=**} {
+      allow read: if true;
+    }
+    
+    // السماح بالكتابة للمستخدمين المصادقين فقط
+    match /categories/{categoryId} {
+      allow write: if request.auth != null;
+    }
+    
+    match /images/{imageId} {
+      allow write: if request.auth != null;
+    }
+  }
+}
+```
 
-## 📞 الدعم
+## 📝 ملاحظات مهمة
 
-إذا واجهت أي مشكلة:
+### استخدام Google Drive للصور:
+- ارفع الصور على Google Drive
+- اجعل الصورة **عامة** (Anyone with the link)
+- الموقع سيحول الرابط تلقائياً للصيغة الصحيحة
+- الصيغة المستخدمة: `https://drive.google.com/thumbnail?id=FILE_ID&sz=w2000`
 
-1. راجع `TROUBLESHOOTING.md`
-2. افتح Console المتصفح للأخطاء
-3. استخدم `test-supabase.html` للتشخيص
-4. راجع [توثيق Supabase](https://supabase.com/docs)
+### نظام المشاريع المميزة:
+- يمكن اختيار **3 مشاريع فقط** كمشاريع مميزة
+- تظهر في الصفحة الرئيسية بتصميم خاص
+- انقر على النجمة ⭐ في لوحة التحكم لتفعيل/إلغاء
 
-## 📝 معلومات الاتصال بـ Supabase
+### التصنيفات الهرمية:
+- يمكن إنشاء تصنيفات رئيسية
+- يمكن إنشاء تصنيفات فرعية تحت أي تصنيف رئيسي
+- في صفحة المشاريع، التصنيفات الفرعية تظهر كمجلدات 📁
 
-- **URL:** `https://bkvcmceyxsgzvvcozwkf.supabase.co`
-- **Table:** `projects`
-- **Storage Bucket:** `portfolio-images`
+## 🌐 استضافة موصى بها
 
-## 🎨 التخصيص
+- **Netlify** (مجاني) - [netlify.com](https://netlify.com)
+- **Vercel** (مجاني) - [vercel.com](https://vercel.com)
+- **GitHub Pages** (مجاني) - [pages.github.com](https://pages.github.com)
+- **Firebase Hosting** (مجاني) - [firebase.google.com/products/hosting](https://firebase.google.com/products/hosting)
 
-يمكنك تخصيص الموقع بسهولة:
+## 📞 التواصل
 
-- **الألوان:** عدّل متغيرات CSS في `style.css`
-- **المحتوى:** عدّل النصوص في ملفات HTML
-- **الصور:** استبدل الصور في الكود
-- **الخطوط:** غيّر الخط في `style.css`
+**بلال ياسر**
+- 📱 الهاتف: +201069125804
+- 📧 البريد: blal.yaser15@gmail.com
+- 💼 Behance: [behance.net/belalyasser](https://www.behance.net/belalyasser)
+- 🔗 LinkedIn: [linkedin.com/in/belal-yasser](https://www.linkedin.com/in/belal-yasser-8aaa03342/)
+
+**المطور - سامح رضا**
+- 📧 البريد: samehabdealsalam@gmail.com
+- 🌐 الموقع: doc-digital.online
 
 ## 📄 الترخيص
 
-هذا المشروع مصمم خصيصاً لبلال ياسر.
+جميع الحقوق محفوظة © 2025 بلال ياسر
 
 ---
 
-**تم التصميم والتطوير بواسطة:** سامح رضا
-
-🌐 [www.doc-digital.online](https://www.doc-digital.online)
+**آخر تحديث:** نوفمبر 2025
+**الإصدار:** 2.0.0 (Firebase Version)

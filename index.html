@@ -6,7 +6,6 @@
     <title>بلال ياسر – مصمم جرافيك مستقل</title>
     <link rel="icon" href="https://i.postimg.cc/TPCqHSWc/4.png" type="image/png">
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="animations-enhancements.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="translations.js"></script>
 </head>
@@ -239,13 +238,14 @@
                     <h2 data-translate="portfolio_title">معرض الأعمال</h2>
                     <p data-translate="portfolio_subtitle">المعرض بيتحدث باستمرار بيضم شغلي في البراندينج، السوشيال ميديا، والتصميمات الطباعية.</p>
                 </div>
-                <div class="category-list fade-up" style="margin-bottom: 30px;">
-                    <!-- Categories will be loaded dynamically -->
+                <div class="featured-slider-container">
+                    <div class="featured-slider">
+                        <div class="slider-track">
+                            <!-- Images will be loaded dynamically by script.js -->
+                        </div>
+                    </div>
                 </div>
-                <div class="portfolio-grid">
-                    <!-- Images will be loaded dynamically by script.js -->
-                </div>
-                <div class="portfolio-cta fade-up">
+                <div class="portfolio-cta fade-up" style="margin-top: 40px;">
                     <a href="projects.html" class="btn btn-primary" data-translate="portfolio_view_more">عرض كل المشاريع</a>
                 </div>
             </div>
@@ -295,7 +295,6 @@
         <i class="fab fa-whatsapp"></i>
     </a>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

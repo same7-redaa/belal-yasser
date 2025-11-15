@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - بلال ياسر</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <style>
+        @font-face {
+            font-family: 'Nahdi-Black';
+            src: url('fonts/Nahdi-Black.woff2') format('woff2'),
+                 url('fonts/Nahdi-Black.woff') format('woff'),
+                 url('fonts/Nahdi-Black.ttf') format('truetype');
+            font-weight: 900;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        :root {
+            --primary: #FF5722;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nahdi-Black', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Login Screen */
+        .login-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 9999;
+        }
+
+        .login-screen.hidden {
+            display: none;
+        }
+
+        .login-box {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-box h2 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 15px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            color: #333;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        .login-box input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .login-box button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-family: inherit;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+
+        .login-box button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.4);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            background: #fee;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        /* Main Control Panel */
+        .control-panel {
+            display: none;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .control-panel.active {
+            display: block;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tabs {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .tab-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid var(--primary);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            color: #333;
+            font-family: inherit;
+            font-size: 16px;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .list-item {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 4px solid var(--primary);
+        }
+
+        .list-item:hover {
+            background: #f0f0f0;
+        }
+
+        .list-item .name {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .list-item .actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .list-item button {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .list-item button:hover {
+            opacity: 0.8;
+        }
+
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .image-card {
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .image-card-info {
+            padding: 15px;
+        }
+
+        .image-card-info .name {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .image-card-info button {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .star-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.6);
+            border: none;
+            color: #ccc;
+            font-size: 24px;
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+
+        .star-btn:hover {
+            background: rgba(0,0,0,0.8);
+            transform: scale(1.1);
+        }
+
+        .star-btn.featured {
+            color: #ffd700;
+        }
+
+        .image-card {
+            position: relative;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .featured-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px solid #eee;
+        }
+
+        .featured-item img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .featured-item select {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .featured-item button {
+            background: var(--danger);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .featured-slot {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border: 2px dashed #ddd;
+        }
+
+        .featured-slot h4 {
+            color: #666;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+            color: #ccc;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 10px;
+            display: none;
+            z-index: 9999;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100px);
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .images-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-box">
+            <h2><i class="fas fa-user-shield"></i> تسجيل الدخول</h2>
+            <form id="loginForm">
+                <input type="email" id="email" placeholder="البريد الإلكتروني" required>
+                <input type="password" id="password" placeholder="كلمة المرور" required>
+                <button type="submit"><i class="fas fa-sign-in-alt"></i> دخول</button>
+            </form>
+            <div class="error-msg" id="loginError">❌ خطأ في البريد أو كلمة المرور</div>
+        </div>
+    </div>
+
+    <!-- Control Panel -->
+    <div class="control-panel" id="controlPanel">
+        <div class="header">
+            <h1><i class="fas fa-crown"></i> لوحة التحكم - بلال ياسر</h1>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> خروج
+            </button>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('categories')">
+                <i class="fas fa-folder"></i> الفئات
+            </button>
+            <button class="tab-btn" onclick="openTab('images')">
+                <i class="fas fa-images"></i> الصور
+            </button>
+        </div>
+
+        <!-- Categories Tab -->
+        <div class="tab-content active" id="categoriesTab">
+            <h2 class="section-title"><i class="fas fa-folder-tree"></i> إدارة الفئات</h2>
+            
+            <div class="form-group">
+                <label><i class="fas fa-plus-circle"></i> إضافة فئة جديدة</label>
+                <input type="text" id="newCategoryAr" placeholder="اسم الفئة بالعربي (مثال: تصميم شعارات)">
+            </div>
+            
+            <div class="form-group">
+                <input type="text" id="newCategoryEn" placeholder="اسم الفئة بالإنجليزي (مثال: Logo Design)">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-layer-group"></i> فئة فرعية من (اختياري)</label>
+                <select id="parentCategorySelect">
+                    <option value="">لا - فئة رئيسية</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-success" onclick="addCategory()">
+                <i class="fas fa-save"></i> حفظ الفئة
+            </button>
+
+            <hr style="margin: 30px 0; border: none; border-top: 2px solid #eee;">
+
+            <h3 style="color: #666; margin-bottom: 20px;"><i class="fas fa-list"></i> الفئات الموجودة</h3>
+            <div id="categoriesList"></div>
+        </div>
+
+        <!-- Images Tab -->
+        <div class="tab-content" id="imagesTab">
+            <h2 class="section-title"><i class="fas fa-image"></i> إدارة الصور</h2>
+            
+            <div class="form-group">
+                <label><i class="fas fa-link"></i> رابط الصورة من Google Drive</label>
+                <input type="url" id="imageUrl" placeholder="https://drive.google.com/uc?export=view&id=..." oninput="convertGoogleDriveUrl()">
+                <small style="color: #666; display: block; margin-top: 5px;" id="urlHint">
+                    💡 استخدم رابط مباشر أو رابط المشاركة - سيتم التحويل تلقائيًا
+                </small>
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-tag"></i> اسم الصورة (اختياري)</label>
+                <input type="text" id="imageName" placeholder="مثال: شعار شركة ABC">
+            </div>
+            
+            <div class="form-group">
+                <label><i class="fas fa-folder-open"></i> اختر الفئة</label>
+                <select id="imageCategorySelect" required>
+                    <option value="">اختر الفئة</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="showOnHomepage" style="width: auto; margin-left: 10px;">
+                    <i class="fas fa-home"></i> عرض في الصفحة الرئيسية
+                </label>
+            </div>
+            
+            <button class="btn btn-primary" onclick="addImage()">
+                <i class="fas fa-upload"></i> إضافة الصورة
+            </button>
+
+            <hr style="margin: 30px 0; border: none; border-top: 2px solid #eee;">
+
+            <h3 style="color: #666; margin-bottom: 20px;">
+                <i class="fas fa-images"></i> الصور الموجودة
+                <span style="font-size: 14px; color: #999; margin-right: 10px;">
+                    (اضغط <i class="fas fa-star" style="color: #ffd700;"></i> لإضافة الصورة لمعرض الأعمال في الصفحة الرئيسية)
+                </span>
+            </h3>
+            <div id="imagesList" class="images-grid"></div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <script type="module">
+        import { db, auth, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, query, orderBy, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase-config.js';
+
+        let categories = [];
+        let images = [];
+
+        // Check Auth
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('controlPanel').classList.add('active');
+                loadData();
+            }
+        });
+
+        // Login
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast('✅ تم تسجيل الدخول بنجاح');
+            } catch (error) {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        });
+
+        // Logout
+        window.logout = async () => {
+            await signOut(auth);
+            location.reload();
+        };
+
+        // Load Data
+        async function loadData() {
+            await loadCategories();
+            await loadImages();
+        }
+
+        // Load Categories
+        async function loadCategories() {
+            const snapshot = await getDocs(query(collection(db, 'categories'), orderBy('createdAt', 'desc')));
+            categories = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderCategories();
+            updateCategorySelects();
+        }
+
+        // Render Categories
+        function renderCategories() {
+            const list = document.getElementById('categoriesList');
+            if (categories.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-folder-open"></i><p>لا توجد فئات بعد</p></div>';
+                return;
+            }
+
+            // Separate main and sub categories
+            const mainCategories = categories.filter(c => !c.parentId);
+            const subCategories = categories.filter(c => c.parentId);
+
+            let html = '';
+            
+            mainCategories.forEach(mainCat => {
+                // Main category
+                html += `
+                    <div class="list-item" style="background: #f8f9fa; font-weight: bold;">
+                        <div class="name">
+                            <i class="fas fa-folder"></i> ${mainCat.nameAr} (${mainCat.nameEn})
+                        </div>
+                        <div class="actions">
+                            <button onclick="deleteCat('${mainCat.id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                // Sub categories under this main category
+                const subs = subCategories.filter(s => s.parentId === mainCat.id);
+                subs.forEach(subCat => {
+                    html += `
+                        <div class="list-item" style="margin-right: 30px; border-right: 3px solid #007bff;">
+                            <div class="name">
+                                <i class="fas fa-folder-open"></i> ${subCat.nameAr} (${subCat.nameEn})
+                            </div>
+                            <div class="actions">
+                                <button onclick="deleteCat('${subCat.id}')">
+                                    <i class="fas fa-trash"></i> حذف
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            });
+
+            list.innerHTML = html;
+        }
+
+        // Load Images
+        async function loadImages() {
+            const snapshot = await getDocs(query(collection(db, 'images'), orderBy('createdAt', 'desc')));
+            images = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderImages();
+        }
+
+        // Render Images
+        function renderImages() {
+            const list = document.getElementById('imagesList');
+            if (images.length === 0) {
+                list.innerHTML = '<div class="empty-state"><i class="fas fa-image"></i><p>لا توجد صور بعد</p></div>';
+                return;
+            }
+
+            list.innerHTML = images.map(img => {
+                const cat = categories.find(c => c.id === img.categoryId);
+                const isFeatured = img.isFeaturedProject || false;
+                return `
+                    <div class="image-card">
+                        <button class="star-btn ${isFeatured ? 'featured' : ''}" onclick="toggleFeatured('${img.id}')" title="${isFeatured ? 'إزالة من معرض الأعمال' : 'إضافة لمعرض الأعمال'}">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <img src="${img.url}" alt="${img.name || 'صورة'}">
+                        <div class="image-card-info">
+                            <div class="name">${img.name || 'بدون اسم'}</div>
+                            <div class="name" style="font-size: 12px; color: #999;">
+                                ${cat ? cat.nameAr : 'بدون فئة'}
+                            </div>
+                            <button onclick="deleteImg('${img.id}')">
+                                <i class="fas fa-trash"></i> حذف
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update Selects
+        function updateCategorySelects() {
+            const parentSelect = document.getElementById('parentCategorySelect');
+            const imageSelect = document.getElementById('imageCategorySelect');
+
+            parentSelect.innerHTML = '<option value="">لا - فئة رئيسية</option>';
+            imageSelect.innerHTML = '<option value="">اختر الفئة</option>';
+
+            categories.filter(c => !c.parentId).forEach(cat => {
+                parentSelect.innerHTML += `<option value="${cat.id}">${cat.nameAr}</option>`;
+                imageSelect.innerHTML += `<option value="${cat.id}">${cat.nameAr}</option>`;
+
+                categories.filter(sub => sub.parentId === cat.id).forEach(sub => {
+                    imageSelect.innerHTML += `<option value="${sub.id}">↳ ${sub.nameAr}</option>`;
+                });
+            });
+        }
+
+        // Add Category
+        window.addCategory = async () => {
+            const nameAr = document.getElementById('newCategoryAr').value;
+            const nameEn = document.getElementById('newCategoryEn').value;
+            const parentId = document.getElementById('parentCategorySelect').value || null;
+
+            if (!nameAr || !nameEn) {
+                showToast('❌ أدخل اسم الفئة بالعربي والإنجليزي', 'error');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'categories'), {
+                    nameAr,
+                    nameEn,
+                    parentId,
+                    createdAt: new Date()
+                });
+
+                document.getElementById('newCategoryAr').value = '';
+                document.getElementById('newCategoryEn').value = '';
+                document.getElementById('parentCategorySelect').value = '';
+                showToast('✅ تم إضافة الفئة بنجاح');
+                loadCategories();
+            } catch (error) {
+                showToast('❌ حدث خطأ', 'error');
+            }
+        };
+
+        // Convert Google Drive URL automatically
+        window.convertGoogleDriveUrl = () => {
+            const input = document.getElementById('imageUrl');
+            const hint = document.getElementById('urlHint');
+            let url = input.value.trim();
+
+            // Check if it's a Google Drive share link
+            const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/);
+            const openIdMatch = url.match(/\/open\?id=([^&]+)/);
+            const ucIdMatch = url.match(/[?&]id=([^&]+)/);
+            
+            let fileId = null;
+            if (fileIdMatch) {
+                fileId = fileIdMatch[1];
+            } else if (openIdMatch) {
+                fileId = openIdMatch[1];
+            } else if (ucIdMatch && url.includes('drive.google.com')) {
+                fileId = ucIdMatch[1];
+            }
+
+            if (fileId) {
+                // Convert to thumbnail format (works better for images)
+                const directUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w2000`;
+                input.value = directUrl;
+                hint.innerHTML = '✅ تم تحويل الرابط تلقائيًا إلى رابط صورة مباشر';
+                hint.style.color = '#27ae60';
+                
+                // Reset hint after 3 seconds
+                setTimeout(() => {
+                    hint.innerHTML = '💡 استخدم رابط مباشر أو رابط المشاركة - سيتم التحويل تلقائيًا';
+                    hint.style.color = '#666';
+                }, 3000);
+            }
+        };
+
+        // Add Image
+        window.addImage = async () => {
+            const url = document.getElementById('imageUrl').value;
+            const name = document.getElementById('imageName').value;
+            const categoryId = document.getElementById('imageCategorySelect').value;
+            const showOnHomepage = document.getElementById('showOnHomepage').checked;
+
+            if (!url || !categoryId) {
+                showToast('❌ أدخل رابط الصورة واختر الفئة', 'error');
+                return;
+            }
+
+            try {
+                await addDoc(collection(db, 'images'), {
+                    url,
+                    name,
+                    categoryId,
+                    showOnHomepage,
+                    createdAt: new Date()
+                });
+
+                document.getElementById('imageUrl').value = '';
+                document.getElementById('imageName').value = '';
+                document.getElementById('imageCategorySelect').value = '';
+                document.getElementById('showOnHomepage').checked = false;
+                showToast('✅ تم إضافة الصورة بنجاح');
+                loadImages();
+            } catch (error) {
+                showToast('❌ حدث خطأ', 'error');
+            }
+        };
+
+        // Delete Category
+        window.deleteCat = async (id) => {
+            if (!confirm('هل أنت متأكد من حذف هذه الفئة؟')) return;
+            await deleteDoc(doc(db, 'categories', id));
+            showToast('✅ تم الحذف');
+            loadCategories();
+        };
+
+        // Delete Image
+        window.deleteImg = async (id) => {
+            if (!confirm('هل أنت متأكد من حذف هذه الصورة؟')) return;
+            await deleteDoc(doc(db, 'images', id));
+            showToast('✅ تم الحذف');
+            loadImages();
+        };
+
+        // Toggle Featured Project
+        window.toggleFeatured = async (imageId) => {
+            try {
+                const img = images.find(i => i.id === imageId);
+                const newStatus = !(img.isFeaturedProject || false);
+                
+                // Check if trying to add and already have 3 featured
+                if (newStatus) {
+                    const featuredCount = images.filter(i => i.isFeaturedProject).length;
+                    if (featuredCount >= 3) {
+                        showToast('❌ يمكنك اختيار 3 صور مميزة فقط. قم بإزالة صورة أولاً.', 'error');
+                        return;
+                    }
+                }
+                
+                await updateDoc(doc(db, 'images', imageId), {
+                    isFeaturedProject: newStatus
+                });
+
+                const featuredCount = images.filter(i => i.isFeaturedProject || (i.id === imageId && newStatus)).length;
+                showToast(newStatus ? `⭐ تم إضافة الصورة (${featuredCount}/3)` : '✅ تم إزالة الصورة من معرض الأعمال');
+                await loadImages();
+            } catch (error) {
+                console.error('Error toggling featured:', error);
+                showToast('❌ حدث خطأ', 'error');
+            }
+        };
+
+        // Switch Tabs
+        window.openTab = (tabName) => {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+        };
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show ' + (type === 'error' ? 'error' : '');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+    </script>
+</body>
+</html>

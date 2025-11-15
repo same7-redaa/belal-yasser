@@ -1,13 +1,8 @@
-// Cache for resources
-const resourceCache = {
-    images: [],
-    fonts: [],
-    icons: [],
-    projects: []
-};
+// Firebase Import
+import { db, collection, getDocs, query, where, orderBy } from './firebase-config.js';
 
 // Language toggle function
-function toggleLanguage() {
+window.toggleLanguage = function() {
     const currentLang = getCurrentLanguage();
     const newLang = currentLang === 'ar' ? 'en' : 'ar';
     setLanguage(newLang);
@@ -21,35 +16,7 @@ window.addEventListener('DOMContentLoaded', () => {
             loadingScreen.classList.add('hidden');
         }, 100);
     }
-    
-    // Load projects in background
-    setTimeout(() => {
-        if (typeof window.supabase !== 'undefined') {
-            const SUPABASE_URL = 'https://bkvcmceyxsgzvvcozwkf.supabase.co';
-            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrdmNtY2V5eHNnenZ2Y296d2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDAyODQsImV4cCI6MjA3NTY3NjI4NH0.TtZg_fT1gBCfxx7jT9bTk_ylm7kAjQGflCbMKcyZJWY';
-            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            
-            supabase
-                .from('projects')
-                .select('image_url')
-                .or('show_on_homepage.eq.true,show_on_homepage.is.null')
-                .order('id', { ascending: false })
-                .then(({ data: projects }) => {
-                    if (projects && projects.length > 0) {
-                        resourceCache.projects = projects;
-                    }
-                })
-                .catch(error => console.error('Error loading projects:', error));
-        }
-    }, 200);
 });
-
-// Language Toggle Function
-function toggleLanguage() {
-    const currentLang = getCurrentLanguage();
-    const newLang = currentLang === 'ar' ? 'en' : 'ar';
-    setLanguage(newLang);
-}
 
 // Header Scroll Effect and Mobile Menu
 document.addEventListener('DOMContentLoaded', () => {
@@ -176,83 +143,102 @@ if (achievementsSection) {
     achievementObserver.observe(achievementsSection);
 }
 
-// Dynamic Portfolio on Homepage
+// Featured Projects Slider
 document.addEventListener('DOMContentLoaded', () => {
-    const SUPABASE_URL = 'https://bkvcmceyxsgzvvcozwkf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJrdmNtY2V5eHNnenZ2Y296d2tmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMDAyODQsImV4cCI6MjA3NTY3NjI4NH0.TtZg_fT1gBCfxx7jT9bTk_ylm7kAjQGflCbMKcyZJWY';
+    const sliderTrack = document.querySelector('.slider-track');
+    let currentIndex = 0;
+    let featuredProjects = [];
+    let autoSlideInterval;
 
-    if (typeof window.supabase === 'undefined') {
-        console.error('Supabase library not loaded');
-        return;
-    }
+    async function loadFeaturedSlider() {
+        if (!sliderTrack) return;
 
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const portfolioGrid = document.querySelector('#portfolio .portfolio-grid');
-    const categoryList = document.querySelector('#portfolio .category-list');
-
-    async function loadHomepagePortfolio() {
-        if (!portfolioGrid) return;
-
-        portfolioGrid.innerHTML = '';
-        
-        if (categoryList) {
-            categoryList.style.display = 'none';
-        }
+        sliderTrack.innerHTML = '<p style="text-align: center; width: 100%; color: var(--text-light); padding: 50px;">جاري تحميل المشاريع المميزة...</p>';
 
         try {
-            let projects = resourceCache.projects;
+            // Load featured projects from Firebase
+            const q = query(
+                collection(db, 'images'),
+                where('isFeaturedProject', '==', true)
+            );
             
-            if (!projects || projects.length === 0) {
-                const { data, error } = await supabase
-                    .from('projects')
-                    .select('image_url')
-                    .or('show_on_homepage.eq.true,show_on_homepage.is.null')
-                    .order('id', { ascending: true })
-                    .limit(3);
+            const snapshot = await getDocs(q);
+            featuredProjects = snapshot.docs.map(doc => ({
+                id: doc.id,
+                image_url: doc.data().url,
+                name: doc.data().name || ''
+            }));
 
-                if (error) {
-                    console.error('Error fetching projects:', error);
-                    portfolioGrid.innerHTML = '<p style="text-align: center; width: 100%;">حدث خطأ أثناء تحميل المشاريع.</p>';
-                    return;
-                }
-                
-                projects = data;
+            if (featuredProjects.length === 0) {
+                sliderTrack.innerHTML = '<p style="text-align: center; width: 100%;">لا توجد مشاريع مميزة لعرضها حالياً.</p>';
+                return;
             }
 
-            if (projects.length === 0) {
-                 portfolioGrid.innerHTML = '<p style="text-align: center; width: 100%;">لا توجد مشاريع لعرضها حالياً.</p>';
-                 return;
-            }
+            // Show only first 3 projects
+            featuredProjects = featuredProjects.slice(0, 3);
 
-            const imagesToShow = projects.slice(0, 3);
-
-            imagesToShow.forEach((project, index) => {
-                const portfolioItem = document.createElement('div');
-                portfolioItem.className = 'portfolio-item';
-                portfolioItem.style.opacity = '1';
-                portfolioItem.style.transform = 'translateY(0) rotateY(0deg) scale(1)';
-                
-                const img = document.createElement('img');
-                img.src = project.image_url;
-                img.alt = 'Project Image';
-                img.loading = 'lazy';
-                
-                img.onerror = function() {
-                    this.style.display = 'none';
-                    portfolioItem.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
-                };
-                
-                portfolioItem.appendChild(img);
-                portfolioGrid.appendChild(portfolioItem);
-            });
+            renderSlider();
+            
+            // Start pulse animation after render
+            setTimeout(() => {
+                startPulseAnimation();
+            }, 500);
 
         } catch (error) {
-            console.error('Error loading homepage portfolio:', error);
-            portfolioGrid.innerHTML = '<p>حدث خطأ أثناء تحميل المشاريع.</p>';
+            console.error('Error loading featured slider:', error);
+            sliderTrack.innerHTML = '<p>حدث خطأ أثناء تحميل المشاريع.</p>';
         }
     }
 
-    loadHomepagePortfolio();
+    function renderSlider() {
+        sliderTrack.innerHTML = '';
+        
+        featuredProjects.forEach((project, index) => {
+            const sliderItem = document.createElement('div');
+            sliderItem.className = 'slider-item';
+            
+            const img = document.createElement('img');
+            img.src = project.image_url;
+            img.alt = project.name || 'Project Image';
+            img.loading = 'lazy';
+            
+            img.onerror = function() {
+                console.error('Failed to load featured image:', project.image_url);
+                this.style.display = 'none';
+            };
+            
+            sliderItem.appendChild(img);
+            sliderTrack.appendChild(sliderItem);
+        });
+    }
+
+    function startPulseAnimation() {
+        const items = document.querySelectorAll('.slider-item');
+        if (items.length === 0) return;
+
+        let currentIndex = 0;
+
+        function pulseNext() {
+            // Remove pulse from all items
+            items.forEach(item => item.classList.remove('pulse'));
+            
+            // Add pulse to current item
+            if (items[currentIndex]) {
+                items[currentIndex].classList.add('pulse');
+            }
+
+            // Move to next item
+            currentIndex = (currentIndex + 1) % items.length;
+
+            // Schedule next pulse
+            setTimeout(pulseNext, 2500); // Pulse every 2.5 seconds
+        }
+
+        // Start the sequence
+        pulseNext();
+    }
+
+    loadFeaturedSlider();
     
     // Wave Ripple Effect - تأثير التموج المتتابع
     function startWaveRipple() {
